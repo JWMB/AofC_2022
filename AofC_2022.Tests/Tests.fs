@@ -26,3 +26,17 @@ let ``D1`` () =
     
     let pt2 = D1.part2 input
     Assert.Equal(45000, pt2)
+
+
+[<Fact>]
+let ``D2`` () =
+    let input = """
+A Y
+B X
+C Z
+"""
+    let pt1 = D2.part1 input
+    Assert.Equal(15, pt1)
+    
+    let pt2 = D2.part2 input
+    Assert.Equal(12, pt2)
