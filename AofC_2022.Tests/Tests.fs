@@ -40,3 +40,19 @@ C Z
     
     let pt2 = D2.part2 input
     Assert.Equal(12, pt2)
+
+[<Fact>]
+let ``D3`` () =
+    let input = """
+vJrwpWtwJgWrhcsFMMfFFhFp
+jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL
+PmmdzqPrVvPwwTWBwg
+wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn
+ttgJtRGJQctTZtZT
+CrZsJsPPZsGzwwsLwLmpwMDw
+"""
+    let pt1 = D3.part1 input
+    Assert.Equal(157, pt1)
+    
+    let pt2 = D3.part2 input
+    Assert.Equal(70, pt2)
