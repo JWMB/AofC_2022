@@ -109,7 +109,7 @@ let writeReadme readmeFilename =
 
 [<EntryPoint>]
 let main argv =
-    if true then //argv.Length > 0 && argv.[0] = "generate_readme") then
+    if argv.Length > 0 && argv.[0] = "generate_readme" then
         printfn "Generating README.md"
         writeReadme "README.md"
     else
