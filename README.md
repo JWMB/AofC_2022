@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `3`ms): `71934`
+Result (in `4`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -23,7 +23,7 @@ let part2 input =
     let result = sorted |> Array.take 3 |> Array.sum
     result
 ```
-Result (in `1`ms): `211447`
+Result (in `2`ms): `211447`
 ## [Day 2 - Rock Paper Scissors](https://adventofcode.com/2022/day/2)
 [Source](AofC_2022/D2.fs) | [Input](AofC_2022/D2.txt)  
 ### part1
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `2`ms): `10624`
+Result (in `3`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -43,19 +43,19 @@ let part2 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `2`ms): `14060`
+Result (in `3`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](AofC_2022/D3.fs) | [Input](AofC_2022/D3.txt)  
 ### part1
 ```FSharp
 let part1 input =
     let rucksacks = parseRows input
-    let compartementalized = rucksacks |> Array.map (fun f -> f |> Array.splitAt (f.Length / 2))
-    let samePer = compartementalized |> Array.map (fun (a, b) -> [| a; b |] |> intersectMany)
+    let compartmentalized = rucksacks |> Array.map (fun f -> f |> Array.splitAt (f.Length / 2))
+    let samePer = compartmentalized |> Array.map (fun (a, b) -> [| a; b |] |> intersectMany)
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `7`ms): `7997`
+Result (in `12`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -66,4 +66,4 @@ let part2 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `2`ms): `2545`
+Result (in `4`ms): `2545`
