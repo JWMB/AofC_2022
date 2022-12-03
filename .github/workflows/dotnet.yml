@@ -25,7 +25,7 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: README
       run: |        
-        dotnet run --project ./AofC_2021/AofC_2021.fsproj -- generate_readme
+        dotnet run --project ./AofC_2022/AofC_2022.fsproj -- generate_readme
         git config --global user.email "jonas.beckeman@gmail.com"
         git config --global user.name "GitHub Action"
         git commit README.md -m 'Re-build README.md' || echo "No changes to commit"
