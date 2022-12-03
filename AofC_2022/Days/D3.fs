@@ -15,8 +15,8 @@ let intersectMany (arr: int array array) =
 
 let part1 input =
     let rucksacks = parseRows input
-    let compartementalized = rucksacks |> Array.map (fun f -> f |> Array.splitAt (f.Length / 2))
-    let samePer = compartementalized |> Array.map (fun (a, b) -> [| a; b |] |> intersectMany)
+    let compartmentalized = rucksacks |> Array.map (fun f -> f |> Array.splitAt (f.Length / 2))
+    let samePer = compartmentalized |> Array.map (fun (a, b) -> [| a; b |] |> intersectMany)
     let sum = samePer |> flatten |> Array.sum
     sum
     
