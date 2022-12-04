@@ -52,7 +52,24 @@ ttgJtRGJQctTZtZT
 CrZsJsPPZsGzwwsLwLmpwMDw
 """
     let pt1 = D3.part1 input
-    Assert.Equal(157, pt1)
+    Assert.Equal(157, pt1)    
     
     let pt2 = D3.part2 input
     Assert.Equal(70, pt2)
+
+
+[<Fact>]
+let ``D4`` () =
+    let input = """
+2-4,6-8
+2-3,4-5
+5-7,7-9
+2-8,3-7
+6-6,4-6
+2-6,4-8
+"""
+    let pt1 = D4.part1 input
+    Assert.Equal(2, pt1)
+    
+    let pt2 = D4.part2 input
+    Assert.Equal(4, pt2)

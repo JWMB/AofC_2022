@@ -2,12 +2,11 @@
 
 open System.Text.RegularExpressions
 
+open Tools
+
 let zz = [|'A'; 'X'|] |> Array.map int
-let rowToInts row = row |> Array.mapi (fun i f -> f - zz[i])
-let parseRows (input: string) = 
-    Regex.Split(input.Trim().Replace("\r", ""), @"\n") 
-    |> Array.map (fun f -> Regex.Split(f.Trim(), " ") |> Array.map char |> Array.map int)
-    |> Array.map (fun f -> rowToInts f)
+let rowToIndices row = row |> Array.mapi (fun i f -> f - zz[i])
+let parseRow (row: string) = Regex.Split(row.Trim(), " ") |> Array.map char |> Array.map int |> rowToIndices
 
 let getPoints x = (x + 1) * 3
 
@@ -24,13 +23,13 @@ let findIndex arr elem = arr |> Array.findIndex ((=) elem)
 let chooseItem p0 expectedOutcome = findIndex winnerMatrix[p0] expectedOutcome
 
 let part1 input =
-    let rows = parseRows input
+    let rows = Parsing.parseRows input parseRow
     let results = rows |> Array.map (fun f -> getOutcome f[0] f[1])
     let sum = results |> Array.sum
     sum
     
 let part2 input =
-    let rows = parseRows input
+    let rows = Parsing.parseRows input parseRow
     let results = rows |> Array.map (fun f -> (chooseItem f[0] (f[1] - 1)) + 1 + getPoints (f[1] - 1))
     let sum = results |> Array.sum
     sum

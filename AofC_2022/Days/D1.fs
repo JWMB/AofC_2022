@@ -2,7 +2,9 @@
 
 open System.Text.RegularExpressions
 
-let splitPerPerson (input: string) = Regex.Split(input.Trim().Replace("\r", ""), @"\n\n") |> Array.map (fun f -> Regex.Split(f.Trim(), "\n") |> Array.map int)
+let splitPerPerson (input: string) =
+    Regex.Split(input.Trim().Replace("\r", ""), @"\n\n") |> Array.map (fun f -> Regex.Split(f.Trim(), "\n") |> Array.map int)
+
 let sums (input: string) = input |> splitPerPerson |> Array.map(fun f -> Array.sum f)
 
 let part1 input =
