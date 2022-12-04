@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `10624`
+Result (in `3`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -55,7 +55,7 @@ let part1 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `16`ms): `7997`
+Result (in `10`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -66,4 +66,4 @@ let part2 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `3`ms): `2545`
+Result (in `4`ms): `2545`
