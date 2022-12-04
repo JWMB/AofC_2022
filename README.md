@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `4`ms): `71934`
+Result (in `12`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -29,37 +29,37 @@ Result (in `3`ms): `211447`
 ### part1
 ```FSharp
 let part1 input =
-    let rows = parseRows input
+    let rows = Parsing.parseRows input parseRow
     let results = rows |> Array.map (fun f -> getOutcome f[0] f[1])
     let sum = results |> Array.sum
     sum
 ```
-Result (in `3`ms): `10624`
+Result (in `12`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
-    let rows = parseRows input
+    let rows = Parsing.parseRows input parseRow
     let results = rows |> Array.map (fun f -> (chooseItem f[0] (f[1] - 1)) + 1 + getPoints (f[1] - 1))
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `14060`
+Result (in `12`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
 ```FSharp
 let part1 input =
-    let rucksacks = parseRows input
+    let rucksacks = Parsing.parseRows input parseRow
     let compartmentalized = rucksacks |> Array.map (fun f -> f |> Array.splitAt (f.Length / 2))
     let samePer = compartmentalized |> Array.map (fun (a, b) -> [| a; b |] |> intersectMany)
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `10`ms): `7997`
+Result (in `21`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
-    let rucksacks = parseRows input
+    let rucksacks = Parsing.parseRows input parseRow
     let numGroups = rucksacks.Length / 3
     let groups = rucksacks |> Array.splitInto numGroups
     let samePer = groups |> Array.map intersectMany
@@ -67,3 +67,21 @@ let part2 input =
     sum
 ```
 Result (in `4`ms): `2545`
+## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
+[Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
+### part1
+```FSharp
+let part1 input =
+    let pairs = Parsing.parseRows input parseRow
+    let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
+    numWithCompleteOverlap
+```
+Result (in `16`ms): `450`
+### part2
+```FSharp
+let part2 input =
+    let pairs = Parsing.parseRows input parseRow
+    let numWithPartialOverlap = pairs |> Array.filter (fun pair -> isRangeOverlap pair[0] pair[1]) |> Array.length
+    numWithPartialOverlap
+```
+Result (in `12`ms): `837`
