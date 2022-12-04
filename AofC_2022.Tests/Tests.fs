@@ -4,6 +4,17 @@ open System
 open Xunit
 
 [<Fact>]
+let ``template`` () =
+    let input = """
+"""
+    let pt1 = Template.part1 input
+    Assert.Equal(0, pt1)
+    
+    let pt2 = Template.part2 input
+    Assert.Equal(0, pt2)
+
+
+[<Fact>]
 let ``D1`` () =
     let input = """
 1000
