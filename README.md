@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `4`ms): `71934`
+Result (in `11`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `10624`
+Result (in `8`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -43,7 +43,7 @@ let part2 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `14060`
+Result (in `12`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -55,7 +55,7 @@ let part1 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `10`ms): `7997`
+Result (in `18`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -66,7 +66,7 @@ let part2 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `4`ms): `2545`
+Result (in `12`ms): `2545`
 ## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
 [Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
 ### part1
@@ -76,7 +76,7 @@ let part1 input =
     let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
     numWithCompleteOverlap
 ```
-Result (in `8`ms): `450`
+Result (in `13`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -92,20 +92,20 @@ Result (in `4`ms): `837`
 let part1 input =
     let data = ParsedInput.Parse input
 
-    let reverse = true
-    let modifiedStacks = data.Instructions |> Array.fold (fun agg curr -> curr.Apply reverse agg) data.Stacks
+    let func = Instruction.Execute true
+    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `17`ms): `SBPQRSCDF`
+Result (in `46`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
     let data = ParsedInput.Parse input
 
-    let reverse = false
-    let modifiedStacks = data.Instructions |> Array.fold (fun agg curr -> curr.Apply reverse agg) data.Stacks
+    let func = Instruction.Execute false
+    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
