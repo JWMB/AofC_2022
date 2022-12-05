@@ -84,3 +84,23 @@ let ``D4`` () =
     
     let pt2 = D4.part2 input
     Assert.Equal(4, pt2)
+
+
+[<Fact>]
+let ``D5`` () =
+    let input = """
+    [D]    
+[N] [C]    
+[Z] [M] [P]
+ 1   2   3 
+
+move 1 from 2 to 1
+move 3 from 1 to 3
+move 2 from 2 to 1
+move 1 from 1 to 2
+"""
+    let pt1 = D5.part1 input
+    Assert.Equal("CMZ", pt1)
+    
+    let pt2 = D5.part2 input
+    Assert.Equal("MCD", pt2)
