@@ -1,10 +1,8 @@
 ﻿module D4
 
-open System.Text.RegularExpressions
 open Tools
 
-let split separator input = Regex.Split(input, separator)
-let parseRow row = split "," row |> Array.map (fun f -> split "-" f |> Array.map int)
+let parseRow row = RxCurry.split "," row |> Array.map (fun f -> RxCurry.split "-" f |> Array.map int)
 
 let isRangeWithin rangeInner rangeOuter = Array.head rangeInner >= Array.head rangeOuter && rangeInner[1] <= rangeOuter[1]
 let isRangeOverlap rangeInner rangeOuter = 

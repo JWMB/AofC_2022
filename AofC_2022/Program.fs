@@ -158,15 +158,15 @@ let main argv =
         | _ ->
             printfn $"Command not found {arg}"
     else
+        let method = D4.part2
         let day = 4
+        // TODO: how to figure out which day method corresponds to? D4.part2.GetType() returns a local runtime type, not associated with the target
+        // Roslyn would work but seems overkill
         let dayType = getDayTypes[day]
+
         let input = match getTypeFilePath dayType "txt" with
                     | Some fi -> File.ReadAllText(fi.FullName)
                     | None -> ""
-
-        D4.part2 input |> ignore
-        //let methods = getDayPartMethods dayType
-        //let results = methods |> Seq.map (fun f -> $"{f.Name}: {f.Invoke(null, [|input|])}") |> Seq.toArray
-
-        //printf "Result:\n%A\n" (results |> String.concat "\n")
+        
+        method input |> ignore
     0

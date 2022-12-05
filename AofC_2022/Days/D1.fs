@@ -1,9 +1,9 @@
 ﻿module D1
 
-open System.Text.RegularExpressions
+open Tools
 
-let splitPerPerson (input: string) =
-    Regex.Split(input.Trim().Replace("\r", ""), @"\n\n") |> Array.map (fun f -> Regex.Split(f.Trim(), "\n") |> Array.map int)
+let splitPerPerson (input: string) = 
+    input |> Parsing.clean |> RxCurry.split "\n\n" |> Array.map (fun f -> f |> RxCurry.split "\n" |> Array.map int)
 
 let sums (input: string) = input |> splitPerPerson |> Array.map(fun f -> Array.sum f)
 

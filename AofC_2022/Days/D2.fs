@@ -6,7 +6,7 @@ open Tools
 
 let zz = [|'A'; 'X'|] |> Array.map int
 let rowToIndices row = row |> Array.mapi (fun i f -> f - zz[i])
-let parseRow (row: string) = Regex.Split(row.Trim(), " ") |> Array.map char |> Array.map int |> rowToIndices
+let parseRow (row: string) = row.Trim() |> RxCurry.split " " |> Array.map char |> Array.map int |> rowToIndices
 
 let getPoints x = (x + 1) * 3
 
