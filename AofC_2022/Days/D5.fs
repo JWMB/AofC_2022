@@ -8,18 +8,17 @@ type Instruction = { Count: int; From: int; To: int; }
 
         static member FromString row = row |> RxCurry.matches @"\d+" |> Seq.map (fun f -> int f.Value) |> Seq.toArray |> Instruction.FromArray
 
-        member this.Apply reverse stacks =
+        static member Execute reverse instruction stacks =
             let liftOp = if reverse then Array.rev else Array.map (fun f -> f)
             let stackByIndex = stacks |> Array.mapi (fun i f -> i, f) |> Map.ofSeq
             let modified = stackByIndex |> Map.map (fun i f -> 
-                if i = this.From then f |> Array.skip this.Count
-                elif i = this.To then f |> Array.append (stackByIndex[this.From] |> Array.take this.Count |> liftOp)
+                if i = instruction.From then f |> Array.skip instruction.Count
+                elif i = instruction.To then f |> Array.append (stackByIndex[instruction.From] |> Array.take instruction.Count |> liftOp)
                 else f
             )
             let asArray = modified |> Map.toArray |> Array.sortBy (fun (i, _) -> i) |> Array.map (fun (_, f) -> f)
             asArray
 
-//COMMON SECTION
 type ParsedInput = { Stacks: char array array; Instructions: Instruction array }
     with
         static member Parse input =
@@ -34,13 +33,15 @@ type ParsedInput = { Stacks: char array array; Instructions: Instruction array }
 
             let instructions = sections[1] |> RxCurry.split "\n" |> Array.map Instruction.FromString
             { Stacks = stacks; Instructions = instructions }
-//COMMON SECTION END
+
+let foldWithFunction func instructions stacks =
+    instructions |> Array.fold (fun agg curr -> func curr agg) stacks
 
 let part1 input =
     let data = ParsedInput.Parse input
 
-    let reverse = true
-    let modifiedStacks = data.Instructions |> Array.fold (fun agg curr -> curr.Apply reverse agg) data.Stacks
+    let func = Instruction.Execute true
+    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
@@ -48,8 +49,8 @@ let part1 input =
 let part2 input =
     let data = ParsedInput.Parse input
 
-    let reverse = false
-    let modifiedStacks = data.Instructions |> Array.fold (fun agg curr -> curr.Apply reverse agg) data.Stacks
+    let func = Instruction.Execute false
+    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
