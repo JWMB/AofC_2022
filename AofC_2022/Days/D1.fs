@@ -3,7 +3,7 @@
 open Tools
 
 let splitPerPerson (input: string) = 
-    input |> Parsing.clean |> RxCurry.split "\n\n" |> Array.map (fun f -> f |> RxCurry.split "\n" |> Array.map int)
+    input |> Parsing.cleanWithTrim |> RxCurry.split "\n\n" |> Array.map (fun f -> f |> RxCurry.split "\n" |> Array.map int)
 
 let sums (input: string) = input |> splitPerPerson |> Array.map(fun f -> Array.sum f)
 

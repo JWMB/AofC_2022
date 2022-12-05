@@ -7,10 +7,11 @@ module RxCurry =
     let split pattern input = Regex.Split(input, pattern)
 
 module Parsing =
-    let clean (input: string) = input.Replace("\r", "").Trim()
-
-    //let splitBy pattern input = Regex.Split(input, pattern)
+    let cleanWithTrimEmptyLines (input: string) = input.Replace("\r", "").Trim('\n')
+    let cleanWithTrim (input: string) = input.Replace("\r", "").Trim()
 
     let parseRows (input: string) rowParser = 
-        input |> clean |> RxCurry.split "\n" |> Array.map rowParser
-        //Regex.Split(input |> clean, "\n") |> Array.map rowParser
+        input |> cleanWithTrim |> RxCurry.split "\n" |> Array.map rowParser
+
+module ArrayEx =
+    let exceptLast arr = arr |> Array.rev |> Array.tail |> Array.rev
