@@ -7,11 +7,8 @@ open Xunit
 let ``template`` () =
     let input = """
 """
-    let pt1 = Template.part1 input
-    Assert.Equal(0, pt1)
-    
-    let pt2 = Template.part2 input
-    Assert.Equal(0, pt2)
+    Assert.Equal(0, Template.part1 input)
+    Assert.Equal(0, Template.part2 input)
 
 
 [<Fact>]
@@ -104,3 +101,16 @@ move 1 from 1 to 2
     
     let pt2 = D5.part2 input
     Assert.Equal("MCD", pt2)
+
+
+[<Fact>]
+let ``D6`` () =
+    let input = """
+mjqjpqmgbljsphdztnvjfqwrcgsmlb
+"""
+    Assert.Equal(7, D6.part1 input)
+    Assert.Equal(6, D6.part1 "nppdvjthqldpwncqszvftbrmjlhg")
+    Assert.Equal(10, D6.part1 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")
+    Assert.Equal(11, D6.part1 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")
+    
+    Assert.Equal(0, D6.part2 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")

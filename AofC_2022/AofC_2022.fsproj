@@ -10,7 +10,9 @@
     <Content Include="Days\D2.txt" />
     <Content Include="Days\D1.txt" />
     <Content Include="Days\D5.txt" />
+    <Content Include="Days\D6.txt" />
     <Compile Include="Days\D5.fs" />
+    <Compile Include="Days\D6.fs" />
     <Compile Include="Days\template.fs" />
     <Compile Include="Days\D4.fs" />
     <Compile Include="Days\D3.fs" />
