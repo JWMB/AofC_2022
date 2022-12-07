@@ -113,4 +113,51 @@ mjqjpqmgbljsphdztnvjfqwrcgsmlb
     Assert.Equal(10, D6.part1 "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg")
     Assert.Equal(11, D6.part1 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")
     
-    Assert.Equal(0, D6.part2 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")
+    Assert.Equal(26, D6.part2 "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw")
+
+
+[<Fact>]
+let ``D7`` () =
+    let input = """
+$ cd /
+$ ls
+dir a
+14848514 b.txt
+8504156 c.dat
+dir d
+$ cd a
+$ ls
+dir e
+29116 f
+2557 g
+62596 h.lst
+$ cd e
+$ ls
+584 i
+$ cd ..
+$ cd ..
+$ cd d
+$ ls
+4060174 j
+8033020 d.log
+5626152 d.ext
+7214296 k
+"""
+//    let input = """
+//$ cd /
+//$ ls
+//dir a
+//dir b
+//100 c.txt
+//$ cd a
+//$ ls
+//dir e
+//200 f.txt
+//$ cd e
+//$ ls
+//400 i.txt
+//"""
+    Assert.Equal(95437, D7.part1 input)
+    Assert.Equal(24933642, D7.part2 input)
+
+

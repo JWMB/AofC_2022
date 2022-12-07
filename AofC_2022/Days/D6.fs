@@ -2,17 +2,16 @@ module D6
 
 open Tools
 
-let strcat str1 str2 = String.concat "" [| str1; str2; |]
 
 let findFirstNonRepeatingStringOfLength length agg curr =
-    if (snd agg) |> String.length = length then agg
+    if (snd agg) |> String.length = length then agg // already found solution - no further modifications
     else
         let foundIndex = (snd agg) |> Seq.tryFindIndex (fun f -> (char (snd curr)) = f)
         let keepFromIndex = match foundIndex with
                             | Some i -> i + 1
                             | None -> 0
-        if (snd agg) |> Seq.length = 0 then curr
-        else ((fst agg) + keepFromIndex, strcat ((snd agg)[keepFromIndex..]) (snd curr))
+        if (snd agg) |> Seq.length = 0 then curr // initial condition
+        else ((fst agg) + keepFromIndex, StringEx.join ((snd agg)[keepFromIndex..]) (snd curr))
 
 let getMarkerEndIndex x markerLength = 
         if (snd x) |> String.length = markerLength then (fst x) + markerLength
