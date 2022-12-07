@@ -4,38 +4,10 @@ open Tools
 
 type File = { name:string; size:int }
 
-//type FileSystemItem = Tree<File, Directory>
-//let fromFile (fileInfo:File) = LeafNode fileInfo
-//let fromDir (dirInfo:Directory) subitems = InternalNode (dirInfo,subitems)
-//let totalSize fileSystemItem =
-//    let fFile acc (file:File) = acc + file.size
-//    let fDir acc (dir:Directory) = acc + dir.size
-//    Tree.fold fFile fDir 0 fileSystemItem
-
-
-//let rec sumTotalSizePerDir item = seq {
-//    match item with
-//    | Branch (file, lst) -> 
-//        let childrenSizes = lst |> List.map (fun child -> (child, (sumTotalSizePerDir child) |> Seq.sumBy (fun (_, size) -> size)))
-//        let isBranch = function | Branch (_, _)-> true | Leaf _ -> false
-//        let childBranchSizes = childrenSizes |> List.filter (fun (c, _) -> isBranch c)
-//        let childrenSizeSum = childrenSizes |> List.sumBy (fun (_, size) -> size)
-//        yield (item, childrenSizeSum)
-//        yield! childBranchSizes
-//    | Leaf l -> yield (item, getItemFromNode(item).size)
-//    }
-
 type Tree<'T> = Leaf of 'T | Branch of 'T * Tree<'T> list
 
 let getItemFromNode = function | Branch (f, _) -> f | Leaf l -> l
 let isBranch = function | Branch (_, _) -> true | Leaf _ -> false
-
-//let rec replaceNode node newNode = function
-//    | x when x = node -> newNode
-//    //| Branch l -> List.map (replaceNode node newNode) l |> Branch
-//    //| Branch l -> Branch(fst l, List.map (replaceNode node newNode) (snd l))
-//    | Branch (value, lst) -> Branch(value, List.map (replaceNode node newNode) lst)
-//    | Leaf _ as x -> x
 
 let rec addNode parentNode newNode = function
     | Branch (value, lst) -> 
@@ -68,7 +40,7 @@ let getHierarchy input =
 
     let cmdWithResults = sections |> Array.map(fun f -> (f |> Array.head, f |> Array.tail))
 
-    let xfold agg curr =
+    let scanCommandsToDirectories agg curr =
         let cmdline = fst curr
         let cmdAndArgs = cmdline |> RxCurry.split " "
         match cmdAndArgs[0] with
@@ -81,7 +53,7 @@ let getHierarchy input =
             { Path = agg.Path; Content = Some(snd curr |> Array.map parseFileSystemItem); }
         | _ -> { Path = [||]; Content = None; }
 
-    let dirsAndFiles = cmdWithResults |> Array.scan xfold { Path = [||]; Content = None; }
+    let dirsAndFiles = cmdWithResults |> Array.scan scanCommandsToDirectories { Path = [||]; Content = None; }
                     |> Array.filter (fun f -> f.Content <> None)
                     |> Array.map (fun f -> (f.Path |> String.concat "/", f.Content.Value))
                     |> Array.distinctBy (fun f -> fst f)
@@ -99,7 +71,7 @@ let getHierarchy input =
 
 let rec flattenChildren item = seq {
     match item with
-    | Branch (file, lst) -> 
+    | Branch (_, lst) -> 
         let flattenedChildren = lst |> List.map (fun c -> (flattenChildren c) |> Seq.toList) |> List.reduce List.append
         yield! flattenedChildren
 
