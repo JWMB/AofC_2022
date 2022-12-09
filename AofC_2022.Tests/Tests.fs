@@ -161,3 +161,18 @@ $ ls
     Assert.Equal(24933642, D7.part2 input)
 
 
+
+
+[<Fact>]
+let ``D8`` () =
+    let input = """
+30373
+25512
+65332
+33549
+35390
+"""
+    Assert.Equal(21, D8.part1 input)
+    Assert.Equal(8, D8.part2 input)
+
+
