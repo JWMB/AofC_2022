@@ -4,6 +4,7 @@ open Tools
 
 type Vector2D = { x: int; y: int; } with
     static member empty = { x = 0; y = 0; }
+    //TODO: how? static member (+) pt1 pt2 = pt1.add pt2
     member this.mul scalar = { x = this.x * scalar; y = this.y * scalar; }
     member this.add pt = { x = this.x + pt.x; y = this.y + pt.y; }
     member this.sub pt = { x = this.x - pt.x; y = this.y - pt.y; }
@@ -67,18 +68,22 @@ let getTailPath headPositions (initialPosition: Vector2D) =
     folded
 
 
-let visualize (lst: Vector2D array) =
-    let distinct = lst |> Array.distinct
-    let rect = distinct |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
+let visualize (pathSets: Vector2D array seq) =
+    let getBoundingRect arr = arr |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
 
-    // let hasItem pt = distinct |> Array.contains pt
-    // let image = Gif.createImageWithXYFunc rect.width rect.height (fun x y -> if hasItem {x = x + rect.left; y = y + rect.top;} then 'x' else ' ')
+    let reduced = pathSets |> Seq.map Array.distinct |> Seq.toArray
 
-    use image = distinct |> Array.toSeq |> Seq.map (fun pt -> (pt.x - rect.left, pt.y - rect.top, 'x')) |> Gif.createImageWithPixelSeq (rect.width+1) (rect.height+1)
-    Gif.saveAsGif "test.gif" image
+    let fullBoundingRect = reduced |> Array.reduce Array.append |> Array.distinct |> getBoundingRect
+    let createImage pathSet = 
+        let offset = fullBoundingRect.topLeft 
+        let image = pathSet |> Array.toSeq |> Seq.map (fun pt -> (pt.x - offset.x, pt.y - offset.y, 'x')) |> Gif.createImageWithPixelSeq (fullBoundingRect.width+1) (fullBoundingRect.height+1)
+        image
+
+    let images = reduced |> Array.map createImage
+    Gif.saveAsGif "Days/D9.gif" (Gif.createGif images)
 
 let absoluteToRelative (lst: Vector2D array) =
-    lst |> Array.windowed 2 |> Array.map (fun x -> x[1].sub x[0])
+    lst |> Array.pairwise |> Array.map (fun (a, b) -> b.sub a)
 
 let relativeToAbsolute (lst: Vector2D array) =
     lst |> Array.fold (fun agg curr -> 
@@ -103,8 +108,13 @@ let part2 input =
         let tailPath = getTailPath headPositions Vector2D.empty
         tailPath |> Array.tail // never any movement first step
 
-    let finalTailPath = [|1..9|] |> Array.fold (fun agg _ -> headPathToTailPath agg) headPath
-    //visualize finalTailPath
+    // scan instead of fold here?
+    let allTailPaths = [|1..9|] |> Array.fold (fun agg _ -> 
+                            let tailPath = headPathToTailPath (Array.last agg)
+                            [|tailPath|] |> Array.append agg
+                            ) [|headPath|]
 
-    let result = finalTailPath |> Array.distinct |> Array.length
+    // visualize allTailPaths
+
+    let result = allTailPaths |> Array.last |> Array.distinct |> Array.length
     result

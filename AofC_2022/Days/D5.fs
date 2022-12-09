@@ -10,7 +10,7 @@ type Instruction = { Count: int; From: int; To: int; }
 
         static member Execute reverse instruction stacks =
             let liftOp = if reverse then Array.rev else Array.map (fun f -> f)
-            let stackByIndex = stacks |> Array.mapi (fun i f -> i, f) |> Map.ofSeq
+            let stackByIndex = stacks |> Array.mapi (fun i f -> i, f) |> Map.ofSeq // TODO: Array.indexed instead?
             let modified = stackByIndex |> Map.map (fun i f -> 
                 if i = instruction.From then f |> Array.skip instruction.Count
                 elif i = instruction.To then f |> Array.append (stackByIndex[instruction.From] |> Array.take instruction.Count |> liftOp)

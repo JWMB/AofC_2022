@@ -1,18 +1,3 @@
-//open System
-//open Microsoft.AspNetCore.Builder
-//open Microsoft.Extensions.Hosting
-
-//[<EntryPoint>]
-//let main args =
-//    let builder = WebApplication.CreateBuilder(args)
-//    let app = builder.Build()
-
-//    app.MapGet("/", Func<string>(fun () -> "Hello World!")) |> ignore
-
-//    app.Run()
-
-//    0 // Exit code
-
 open System
 open System.Text.RegularExpressions
 open System.IO
@@ -64,22 +49,30 @@ let generateReadMe (type_: Type) (aofcInfo: Tools.AofCSiteInfo.DayInfo) (basePat
         if m.Success then m.Value.Trim()
         else ""
 
-    let methodInfo input (method: Reflection.MethodInfo) = 
+    let createMethodSummary input (method: Reflection.MethodInfo) = 
         let stopWatch = new Stopwatch();
         stopWatch.Start()
         let methodResult = method.Invoke(null, [|input|]).ToString()
         stopWatch.Stop()
         let elapsed = int stopWatch.Elapsed.TotalMilliseconds
+
+        let visualizationFile = getTypeFilePath type_ ".gif"
+
         let methodResultString = 
             if methodResult.Contains("\n") then
                 $"\n```\n{methodResult}\n```"
             else $"`{methodResult}`"
-        $"### {method.Name}\n```FSharp\n{getSnippet method}\n```\nResult (in `{elapsed}`ms): {methodResultString}"
+        $"""### {method.Name}
+```FSharp
+{getSnippet method}
+```
+{if visualizationFile.IsSome then $"![visualization]({relativePath visualizationFile.Value.Name})" else ""}
+Result (in `{elapsed}`ms): {methodResultString}"""
 
     let input = getFileContent type_ "txt"
     $"""## [Day {aofcInfo.Day} - {aofcInfo.Title}]({aofcInfo.Url})
 [Source]({relativePath type_.Name + ".fs"}) | [Input]({match getTypeFilePath type_ "txt" with | Some f -> relativePath f.Name | None -> ""})  
-{getDayPartMethods type_ |> Array.map (fun f-> methodInfo input f) |> String.concat "\n"}
+{getDayPartMethods type_ |> Array.map (fun f-> createMethodSummary input f) |> String.concat "\n"}
 """
 
 let writeReadme readmeFilename =

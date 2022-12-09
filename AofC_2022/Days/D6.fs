@@ -17,7 +17,7 @@ let getMarkerEndIndex x markerLength =
         if (snd x) |> String.length = markerLength then (fst x) + markerLength
         else -1
 
-let stringToIndexedTuples str = str|> Seq.mapi (fun i f -> (i, string f))
+let stringToIndexedTuples str = str|> Seq.mapi (fun i f -> (i, string f)) // TODO: Seq.indexed instead?
 
 let part1 input =
     let markerLength = 4
