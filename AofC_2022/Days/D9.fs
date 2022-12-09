@@ -44,12 +44,9 @@ let parseRow row =
 
 type State = { head: Vector2D; tail: Vector2D; }
 
-let getPath headMoves initialPosition =
-    let positions = { head = initialPosition; tail = initialPosition }
-
-    let moveSnake current headMove = 
-        let newHead = current.head.add headMove
-        let diff = newHead.sub current.tail
+let getTailPath headPositions (initialPosition: Vector2D) =
+    let moveSnake (currentTail: Vector2D) (newHead: Vector2D) = 
+        let diff = newHead.sub currentTail
         let tailMove =
             let withSide1 = diff.withSideMaxLength 1
             if withSide1 = diff then // close enough
@@ -59,37 +56,15 @@ let getPath headMoves initialPosition =
                 else withSide1
             else
                 withSide1
-        let newTail = current.tail.add tailMove
-        { head = newHead; tail = newTail }
+        let newTail = currentTail.add tailMove
+        newTail
 
-    let perInstruction lst curr =
-        let newState = moveSnake (lst |> Array.last) curr
-        [|newState|] |> Array.append lst
+    let perInstruction lst (curr: Vector2D) =
+        let newTail = moveSnake (lst |> Array.last) curr
+        [|newTail|] |> Array.append lst
 
-    let folded = headMoves |> Array.fold perInstruction [|positions|]
+    let folded = headPositions |> Array.fold perInstruction [|initialPosition|]
     folded
-
-//let getPathX headPositions initialPosition =
-//    let moveSnake (currentTail: Vector2D) (newHead: Vector2D) = 
-//        let diff = newHead.sub currentTail
-//        let tailMove =
-//            let withSide1 = diff.withSideMaxLength 1
-//            if withSide1 = diff then // close enough
-//                {x=0;y=0;}
-//            elif diff.x * diff.y = 0 then 
-//                if diff.x = 0 && diff.y = 0 then {x=0;y=0;}
-//                else withSide1
-//            else
-//                withSide1
-//        let newTail = currentTail.add tailMove
-//        newTail
-
-//    let perInstruction lst curr =
-//        let newState = moveSnake (lst |> Array.last) curr
-//        [|newState|] |> Array.append lst
-
-//    let folded = headPositions |> Array.fold perInstruction initialPosition
-//    folded
 
 
 let visualize (lst: Vector2D array) =
@@ -102,45 +77,41 @@ let visualize (lst: Vector2D array) =
     use image = distinct |> Array.toSeq |> Seq.map (fun pt -> (pt.x - rect.left, pt.y - rect.top, 'x')) |> Gif.createImageWithPixelSeq (rect.width+1) (rect.height+1)
     Gif.saveAsGif "test.gif" image
 
+let absoluteToRelative (lst: Vector2D array) =
+    lst |> Array.windowed 2 |> Array.map (fun x -> x[1].sub x[0])
+
+let relativeToAbsolute (lst: Vector2D array) =
+    lst |> Array.fold (fun agg curr -> 
+        let newPos = curr.add (agg |> Array.last)
+        [|newPos|] |> Array.append agg
+        ) [|Vector2D.empty|]
 
 let part1 input =
     let instructions = Parsing.parseRows input parseRow
 
-    let allHeadMoves =
+    let allHeadPositions =
         let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||]
+        instructions |> Array.fold step [||] |> relativeToAbsolute
 
-    let trail = getPath allHeadMoves Vector2D.empty
+    let tailPath = getTailPath allHeadPositions Vector2D.empty
 
-    let allTails = trail |> Array.map (fun f -> f.tail)
-    let result = allTails |> Array.distinct |> Array.length
+    let result = tailPath |> Array.distinct |> Array.length
 
     result
     
 let part2 input =
+    let headPositionsToTailPositions headPositions =
+        let tailPath = getTailPath headPositions Vector2D.empty
+        tailPath |> Array.tail // never any movement first step
+
     let instructions = Parsing.parseRows input parseRow
-
-    let headMovesToTailPositions headMoves =
-        let trail = getPath headMoves Vector2D.empty
-        trail |> Array.map (fun f -> f.tail) |> Array.tail // never any movement first step
-
-    let absoluteToRelative (lst: Vector2D array) =
-        lst |> Array.windowed 2 |> Array.map (fun x -> x[1].sub x[0])
-
-    let relativeToAbsolute (lst: Vector2D array) =
-        lst |> Array.fold (fun agg curr -> 
-            let newPos = curr.add (agg |> Array.last)
-            [|newPos|] |> Array.append agg
-            ) [|Vector2D.empty|]
-
-    let allHeadMoves =
+    let allHeadPositions =
         let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||]
+        instructions |> Array.fold step [||] |> relativeToAbsolute
 
-    let finalMoves = [|1..9|] |> Array.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
+    let finalPositions = [|1..9|] |> Array.fold (fun agg _ -> headPositionsToTailPositions agg) allHeadPositions
 
-    let absolute = relativeToAbsolute finalMoves
-    // visualize absolute
+    //visualize finalPositions
 
-    let result = absolute |> Array.distinct |> Array.length
+    let result = finalPositions |> Array.distinct |> Array.length
     result
