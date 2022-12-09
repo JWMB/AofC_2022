@@ -16,7 +16,7 @@ let part1 input =
     result
 ```
 
-Result (in `3`ms): `71934`
+Result (in `4`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -25,7 +25,7 @@ let part2 input =
     result
 ```
 
-Result (in `2`ms): `211447`
+Result (in `3`ms): `211447`
 ## [Day 2 - Rock Paper Scissors](https://adventofcode.com/2022/day/2)
 [Source](/AofC_2022/Days/D2.fs) | [Input](/AofC_2022/Days/D2.txt)  
 ### part1
@@ -37,7 +37,7 @@ let part1 input =
     sum
 ```
 
-Result (in `2`ms): `10624`
+Result (in `4`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -47,7 +47,7 @@ let part2 input =
     sum
 ```
 
-Result (in `2`ms): `14060`
+Result (in `4`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -60,7 +60,7 @@ let part1 input =
     sum
 ```
 
-Result (in `6`ms): `7997`
+Result (in `11`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -72,7 +72,7 @@ let part2 input =
     sum
 ```
 
-Result (in `2`ms): `2545`
+Result (in `4`ms): `2545`
 ## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
 [Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
 ### part1
@@ -83,7 +83,7 @@ let part1 input =
     numWithCompleteOverlap
 ```
 
-Result (in `5`ms): `450`
+Result (in `9`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -92,7 +92,7 @@ let part2 input =
     numWithPartialOverlap
 ```
 
-Result (in `2`ms): `837`
+Result (in `4`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -107,7 +107,7 @@ let part1 input =
     result
 ```
 
-Result (in `11`ms): `SBPQRSCDF`
+Result (in `18`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -120,7 +120,7 @@ let part2 input =
     result
 ```
 
-Result (in `3`ms): `RGLVRCQSB`
+Result (in `6`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
 ### part1
@@ -135,7 +135,7 @@ let part1 input =
     result
 ```
 
-Result (in `6`ms): `1544`
+Result (in `7`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
@@ -148,7 +148,7 @@ let part2 input =
     result
 ```
 
-Result (in `1`ms): `2145`
+Result (in `2`ms): `2145`
 ## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
 [Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
 ### part1
@@ -164,7 +164,7 @@ let part1 input =
     sum
 ```
 
-Result (in `63`ms): `2061777`
+Result (in `105`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -186,7 +186,7 @@ let part2 input =
     smallestBigNuff
 ```
 
-Result (in `50`ms): `4473403`
+Result (in `69`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -221,7 +221,7 @@ let part1 input =
     result
 ```
 
-Result (in `28`ms): `1803`
+Result (in `35`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -250,7 +250,7 @@ let part2 input =
     result
 ```
 
-Result (in `288`ms): `268912`
+Result (in `415`ms): `268912`
 ## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
 [Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
 ### part1
@@ -262,7 +262,7 @@ let part1 input =
     result
 ```
 
-Result (in `261`ms): `6314`
+Result (in `450`ms): `6314`
 ### part2
 ```FSharp
 let part2 input =
@@ -283,5 +283,5 @@ let part2 input =
     let result = allTailPaths |> Array.last |> Array.distinct |> Array.length
     result
 ```
-![visualization](/AofC_2022/Days/D9part2.gif)  
-Result (in `1027`ms): `2504`
+
+Result (in `1832`ms): `2504`
