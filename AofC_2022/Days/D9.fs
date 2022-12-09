@@ -14,6 +14,13 @@ type Vector2D = { x: int; y: int; } with
 
 type Rect = { topLeft: Vector2D; size: Vector2D } with
     static member empty = { topLeft = Vector2D.empty; size = Vector2D.empty;  }
+    member this.left = this.topLeft.x
+    member this.right = this.topLeft.x + this.size.x
+    member this.top = this.topLeft.y
+    member this.bottom = this.topLeft.y + this.size.y
+    member this.width = this.size.x
+    member this.height = this.size.y
+
     member this.expand pt = 
         let expand (value, length) newVal =
             if newVal < value then (newVal, (value - newVal) + length) 
@@ -26,11 +33,11 @@ type Rect = { topLeft: Vector2D; size: Vector2D } with
 let parseRow row =
     let itemsToCmd (arr: string array) = 
         let move = match arr[0] with
-        | "R" -> { x = 1; y = 0; }
-        | "L" -> { x = -1; y = 0; }
-        | "U" -> { x = 0; y = -1; }
-        | "D" -> { x = 0; y = 1; }
-        | _ -> { x = 0; y = 0; }
+                    | "R" -> { x = 1; y = 0; }
+                    | "L" -> { x = -1; y = 0; }
+                    | "U" -> { x = 0; y = -1; }
+                    | "D" -> { x = 0; y = 1; }
+                    | _ -> { x = 0; y = 0; }
         (move, int arr[1])
 
     row |> RxCurry.split "\s" |> itemsToCmd
@@ -57,17 +64,44 @@ let getPath headMoves initialPosition =
 
     let perInstruction lst curr =
         let newState = moveSnake (lst |> Array.last) curr
-        //newState :: lst
         [|newState|] |> Array.append lst
-        //let newState = moveSnake (lst |> List.last) curr
-        //[newState] |> List.append lst
 
     let folded = headMoves |> Array.fold perInstruction [|positions|]
     folded
 
+//let getPathX headPositions initialPosition =
+//    let moveSnake (currentTail: Vector2D) (newHead: Vector2D) = 
+//        let diff = newHead.sub currentTail
+//        let tailMove =
+//            let withSide1 = diff.withSideMaxLength 1
+//            if withSide1 = diff then // close enough
+//                {x=0;y=0;}
+//            elif diff.x * diff.y = 0 then 
+//                if diff.x = 0 && diff.y = 0 then {x=0;y=0;}
+//                else withSide1
+//            else
+//                withSide1
+//        let newTail = currentTail.add tailMove
+//        newTail
+
+//    let perInstruction lst curr =
+//        let newState = moveSnake (lst |> Array.last) curr
+//        [|newState|] |> Array.append lst
+
+//    let folded = headPositions |> Array.fold perInstruction initialPosition
+//    folded
+
+
 let visualize (lst: Vector2D array) =
-    let size = lst |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
-    size
+    let distinct = lst |> Array.distinct
+    let rect = distinct |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
+
+    // let hasItem pt = distinct |> Array.contains pt
+    // let image = Gif.createImageWithXYFunc rect.width rect.height (fun x y -> if hasItem {x = x + rect.left; y = y + rect.top;} then 'x' else ' ')
+
+    use image = distinct |> Array.toSeq |> Seq.map (fun pt -> (pt.x - rect.left, pt.y - rect.top, 'x')) |> Gif.createImageWithPixelSeq (rect.width+1) (rect.height+1)
+    Gif.saveAsGif "test.gif" image
+
 
 let part1 input =
     let instructions = Parsing.parseRows input parseRow
@@ -106,8 +140,7 @@ let part2 input =
     let finalMoves = [|1..9|] |> Array.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
 
     let absolute = relativeToAbsolute finalMoves
-    //let rect = visualize absolute
+    // visualize absolute
 
     let result = absolute |> Array.distinct |> Array.length
-
     result
