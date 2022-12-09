@@ -86,32 +86,25 @@ let relativeToAbsolute (lst: Vector2D array) =
         [|newPos|] |> Array.append agg
         ) [|Vector2D.empty|]
 
+let instructionsToHeadPath instructions =
+    let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
+    instructions |> Array.fold step [||] |> relativeToAbsolute
+
 let part1 input =
-    let instructions = Parsing.parseRows input parseRow
-
-    let allHeadPositions =
-        let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||] |> relativeToAbsolute
-
-    let tailPath = getTailPath allHeadPositions Vector2D.empty
-
+    let headPath = instructionsToHeadPath (Parsing.parseRows input parseRow)
+    let tailPath = getTailPath headPath Vector2D.empty
     let result = tailPath |> Array.distinct |> Array.length
-
     result
     
 let part2 input =
-    let headPositionsToTailPositions headPositions =
+    let headPath = instructionsToHeadPath (Parsing.parseRows input parseRow)
+
+    let headPathToTailPath headPositions =
         let tailPath = getTailPath headPositions Vector2D.empty
         tailPath |> Array.tail // never any movement first step
 
-    let instructions = Parsing.parseRows input parseRow
-    let allHeadPositions =
-        let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||] |> relativeToAbsolute
+    let finalTailPath = [|1..9|] |> Array.fold (fun agg _ -> headPathToTailPath agg) headPath
+    //visualize finalTailPath
 
-    let finalPositions = [|1..9|] |> Array.fold (fun agg _ -> headPositionsToTailPositions agg) allHeadPositions
-
-    //visualize finalPositions
-
-    let result = finalPositions |> Array.distinct |> Array.length
+    let result = finalTailPath |> Array.distinct |> Array.length
     result
