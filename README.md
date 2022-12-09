@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `4`ms): `71934`
+Result (in `12`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `12`ms): `10624`
+Result (in `4`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -43,7 +43,7 @@ let part2 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `5`ms): `14060`
+Result (in `21`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -76,7 +76,7 @@ let part1 input =
     let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
     numWithCompleteOverlap
 ```
-Result (in `8`ms): `450`
+Result (in `16`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -84,7 +84,7 @@ let part2 input =
     let numWithPartialOverlap = pairs |> Array.filter (fun pair -> isRangeOverlap pair[0] pair[1]) |> Array.length
     numWithPartialOverlap
 ```
-Result (in `12`ms): `837`
+Result (in `4`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -98,7 +98,7 @@ let part1 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `36`ms): `SBPQRSCDF`
+Result (in `37`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -110,7 +110,7 @@ let part2 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `13`ms): `RGLVRCQSB`
+Result (in `5`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
 ### part1
@@ -124,7 +124,7 @@ let part1 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `14`ms): `1544`
+Result (in `15`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
@@ -136,7 +136,7 @@ let part2 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `2`ms): `2145`
+Result (in `10`ms): `2145`
 ## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
 [Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
 ### part1
@@ -151,7 +151,7 @@ let part1 input =
     let sum = sizes |> List.filter (fun size -> size <= 100000) |> List.sum
     sum
 ```
-Result (in `170`ms): `2061777`
+Result (in `171`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -172,4 +172,66 @@ let part2 input =
 
     smallestBigNuff
 ```
-Result (in `81`ms): `4473403`
+Result (in `65`ms): `4473403`
+## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
+[Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
+### part1
+```FSharp
+let part1 input =
+    let matrix = { data = Parsing.parseRows input parseRow }
+
+    let getMaxAndVisible pt step = lineOfSight matrix pt step 
+                                |> Seq.fold (fun (currentMax, lst) curr -> 
+                                    let height = matrix.getAt curr
+                                    if height > currentMax then (height, [curr] |> List.append lst) else (currentMax, lst))
+                                    (0, [])
+
+    let getVisible pt step = snd (getMaxAndVisible pt step)
+
+    let viewpoints numSteps otherside =
+        [1..numSteps] |> List.map (fun x -> 
+            [ (0, [0;1]); (otherside, [0;-1])] |> List.map (fun (y, dir) -> ([x;y], dir))
+        ) |> List.reduce List.append
+    
+    let forX = viewpoints (matrix.size.x - 2) (matrix.size.y-1)
+    let forY = viewpoints (matrix.size.y - 2) (matrix.size.x-1) |> List.map (fun (pt, dir) -> (pt |> List.rev, dir |> List.rev))
+
+    let lstToPt (lst: int list) = { x = lst[0]; y = lst[1]; }
+    let allViewpoints = forX |> List.append forY |> List.map (fun (pt, dir) -> (lstToPt pt, lstToPt dir))
+
+    let visibleFromViewpoints = allViewpoints |> List.map (fun (pt, step) -> getVisible pt step) |> List.reduce List.append |> List.distinct
+
+    let exceptEdges = visibleFromViewpoints |> List.filter (fun pt -> pt.x > 0 && pt.y > 0 && pt.x < (matrix.size.x-1) && pt.y < (matrix.size.y-1))
+
+    let result = exceptEdges.Length + matrix.size.x * 2 + matrix.size.y * 2 - 4
+    result
+```
+Result (in `30`ms): `1803`
+### part2
+```FSharp
+let part2 input =
+    let matrix = { data = Parsing.parseRows input parseRow }
+    let directions = [{x=1;y=0}; {x= -1;y=0}; {x=0;y=1}; {x=0;y= -1}]
+    let viewpoints = [0..matrix.size.x-1] |> List.map (fun x -> [0..matrix.size.y-1] |> List.map (fun y -> {x=x;y=y;})) |> List.reduce List.append
+
+    let folder threshold (currentMax, lst) curr = 
+        let newMax = max (matrix.getAt curr) currentMax
+        if newMax >= threshold then 
+            if currentMax < 99 then (99, addToList lst curr)
+            else (currentMax,lst)
+        else
+            (newMax, addToList lst curr)
+
+    let getClearingDistance pt direction threshold = lineOfSight matrix pt direction |> Seq.fold (folder threshold) (0, [])
+    let getClearingDistanceX pt direction = snd (getClearingDistance (add pt direction) direction (matrix.getAt pt))
+    
+    let getViewLengths pt = directions |> List.map (fun dir -> getClearingDistanceX pt dir) |> List.map (fun f -> f.Length)
+
+    let visibleFromViewpoints = viewpoints |> List.map (fun pt -> (getViewLengths pt))
+    let mul lst = lst |> List.reduce (fun a b -> a * b)
+    let scores = visibleFromViewpoints |> List.map mul
+
+    let result = scores |> List.max
+    result
+```
+Result (in `456`ms): `268912`
