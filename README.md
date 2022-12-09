@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `12`ms): `71934`
+Result (in `18`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -23,7 +23,7 @@ let part2 input =
     let result = sorted |> Array.take 3 |> Array.sum
     result
 ```
-Result (in `11`ms): `211447`
+Result (in `6`ms): `211447`
 ## [Day 2 - Rock Paper Scissors](https://adventofcode.com/2022/day/2)
 [Source](/AofC_2022/Days/D2.fs) | [Input](/AofC_2022/Days/D2.txt)  
 ### part1
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `10624`
+Result (in `5`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -55,7 +55,7 @@ let part1 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `19`ms): `7997`
+Result (in `40`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -66,7 +66,7 @@ let part2 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `4`ms): `2545`
+Result (in `15`ms): `2545`
 ## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
 [Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
 ### part1
@@ -76,7 +76,7 @@ let part1 input =
     let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
     numWithCompleteOverlap
 ```
-Result (in `9`ms): `450`
+Result (in `13`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -84,7 +84,7 @@ let part2 input =
     let numWithPartialOverlap = pairs |> Array.filter (fun pair -> isRangeOverlap pair[0] pair[1]) |> Array.length
     numWithPartialOverlap
 ```
-Result (in `4`ms): `837`
+Result (in `6`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -98,7 +98,7 @@ let part1 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `34`ms): `SBPQRSCDF`
+Result (in `30`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -110,7 +110,7 @@ let part2 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `13`ms): `RGLVRCQSB`
+Result (in `7`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
 ### part1
@@ -124,7 +124,7 @@ let part1 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `10`ms): `1544`
+Result (in `16`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
@@ -136,7 +136,7 @@ let part2 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `2`ms): `2145`
+Result (in `3`ms): `2145`
 ## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
 [Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
 ### part1
@@ -151,7 +151,7 @@ let part1 input =
     let sum = sizes |> List.filter (fun size -> size <= 100000) |> List.sum
     sum
 ```
-Result (in `214`ms): `2061777`
+Result (in `162`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -172,7 +172,7 @@ let part2 input =
 
     smallestBigNuff
 ```
-Result (in `66`ms): `4473403`
+Result (in `88`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -206,7 +206,7 @@ let part1 input =
     let result = exceptEdges.Length + matrix.size.x * 2 + matrix.size.y * 2 - 4
     result
 ```
-Result (in `32`ms): `1803`
+Result (in `45`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -234,7 +234,7 @@ let part2 input =
     let result = scores |> List.max
     result
 ```
-Result (in `559`ms): `268912`
+Result (in `692`ms): `268912`
 ## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
 [Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
 ### part1
@@ -242,47 +242,34 @@ Result (in `559`ms): `268912`
 let part1 input =
     let instructions = Parsing.parseRows input parseRow
 
-    let allHeadMoves =
+    let allHeadPositions =
         let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||]
+        instructions |> Array.fold step [||] |> relativeToAbsolute
 
-    let trail = getPath allHeadMoves Vector2D.empty
+    let tailPath = getTailPath allHeadPositions Vector2D.empty
 
-    let allTails = trail |> Array.map (fun f -> f.tail)
-    let result = allTails |> Array.distinct |> Array.length
+    let result = tailPath |> Array.distinct |> Array.length
 
     result
 ```
-Result (in `163`ms): `6314`
+Result (in `552`ms): `6314`
 ### part2
 ```FSharp
 let part2 input =
+    let headPositionsToTailPositions headPositions =
+        let tailPath = getTailPath headPositions Vector2D.empty
+        tailPath |> Array.tail // never any movement first step
+
     let instructions = Parsing.parseRows input parseRow
-
-    let headMovesToTailPositions headMoves =
-        let trail = getPath headMoves Vector2D.empty
-        trail |> Array.map (fun f -> f.tail) |> Array.tail // never any movement first step
-
-    let absoluteToRelative (lst: Vector2D array) =
-        lst |> Array.windowed 2 |> Array.map (fun x -> x[1].sub x[0])
-
-    let relativeToAbsolute (lst: Vector2D array) =
-        lst |> Array.fold (fun agg curr -> 
-            let newPos = curr.add (agg |> Array.last)
-            [|newPos|] |> Array.append agg
-            ) [|Vector2D.empty|]
-
-    let allHeadMoves =
+    let allHeadPositions =
         let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
-        instructions |> Array.fold step [||]
+        instructions |> Array.fold step [||] |> relativeToAbsolute
 
-    let finalMoves = [|1..9|] |> Array.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
+    let finalPositions = [|1..9|] |> Array.fold (fun agg _ -> headPositionsToTailPositions agg) allHeadPositions
 
-    let absolute = relativeToAbsolute finalMoves
-    //let rect = visualize absolute
+    //visualize finalPositions
 
-    let result = absolute |> Array.distinct |> Array.length
-
+    let result = finalPositions |> Array.distinct |> Array.length
     result
 ```
-Result (in `1364`ms): `2504`
+Result (in `2632`ms): `2504`
