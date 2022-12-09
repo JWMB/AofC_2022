@@ -1,6 +1,10 @@
 ﻿namespace Tools
 
 open System.Text.RegularExpressions
+open System.Drawing
+open SixLabors.ImageSharp.PixelFormats
+open SixLabors.ImageSharp
+open SixLabors.ImageSharp.Memory
 
 module RxCurry =
     let matches pattern input = Regex.Matches(input, pattern)
@@ -18,9 +22,82 @@ module ArrayEx =
 
 module StringEx =
     let join str1 str2 = String.concat "" [| str1; str2; |]
-    //let joinAll strs = String.concat "" strs
     let splitJoin splitBy funcManipulateArray (str: string) = Regex.Split(str, splitBy) |> funcManipulateArray |> String.concat splitBy
 
+module Gif =
+    let charToColor char = if char = ' ' then Color.Black else Color.White
+
+    let createImageWithPixelSeq width height pixels =
+        let image = new Image<Rgba32>(width, height, Color.Black)
+
+        for (x, y, char) in pixels do
+            image[x, y] <- charToColor char
+        image
+
+
+    let createImageWithXYFunc width height funcGet =
+        let image = new Image<Rgba32>(width, height, Color.Black)
+
+        for x in [|0..width-1|] do
+            for y in [|0..height-1|] do
+                let char = funcGet x y 
+                image[x, y] <- charToColor char
+        image
+
+    let createImage (data: char array array) =
+        let width = Array.length data[0]
+        let height = Array.length data
+        let image = new Image<Rgba32>(width, height, Color.Black)
+
+        for x in [|0..width-1|] do
+            for y in [|0..height-1|] do
+                let char = data[y][x]
+                image[x, y] <- charToColor char
+        image
+
+    let saveAsGif (filename: string) (gif: Image) =
+        gif.SaveAsGif(filename)
+
+    let createGif (data: char array array seq) =
+        let first = data |> Seq.head
+        let width = Array.length first[0]
+        let height = Array.length first
+
+        let frameDelay = 100 // Delay between frames in (1/100) of a second.
+
+        //let colors = [ Color.Green; Color.Red ]
+
+        // Create empty image.
+        use gif = new Image<Rgba32>(width, height, Color.Black)
+
+        // Set animation loop repeat count to 5.
+        let mutable gifMetaData = gif.Metadata.GetGifMetadata()
+        gifMetaData.RepeatCount <- 5us
+
+        // Set the delay until the next image is displayed.
+        let mutable metadata = gif.Frames.RootFrame.Metadata.GetGifMetadata()
+        metadata.FrameDelay <- frameDelay
+
+        for frameData in data do
+            use image = createImage frameData
+
+        //let frames = colors |> List.toSeq |> Seq.map (fun clr ->
+            //use image = new Image<Rgba32>(width, height, clr)
+            //let buffer = new Buffer2D<Rgba32>()
+            //image.Frames.RootFrame.PixelBuffer <- buffer
+            // Set the delay until the next image is displayed.
+            let metadata = image.Frames.RootFrame.Metadata.GetGifMetadata()
+            metadata.FrameDelay <- frameDelay
+
+            gif.Frames.AddFrame(image.Frames.RootFrame) |> ignore
+
+        //for frame in frames do
+        //    gif.Frames.AddFrame(frame) |> ignore
+
+        gif
+        // Save the final result.
+        //Image.FromStream
+        //Image.FromFile("myimage.png");
 //type Tree<'LeafData,'INodeData> =
 //    | LeafNode of 'LeafData
 //    | InternalNode of 'INodeData * Tree<'LeafData,'INodeData> seq
