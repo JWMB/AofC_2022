@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `12`ms): `71934`
+Result (in `15`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -23,7 +23,7 @@ let part2 input =
     let result = sorted |> Array.take 3 |> Array.sum
     result
 ```
-Result (in `3`ms): `211447`
+Result (in `4`ms): `211447`
 ## [Day 2 - Rock Paper Scissors](https://adventofcode.com/2022/day/2)
 [Source](/AofC_2022/Days/D2.fs) | [Input](/AofC_2022/Days/D2.txt)  
 ### part1
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `4`ms): `10624`
+Result (in `8`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -43,7 +43,7 @@ let part2 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `21`ms): `14060`
+Result (in `6`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -55,7 +55,7 @@ let part1 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `18`ms): `7997`
+Result (in `34`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -66,7 +66,7 @@ let part2 input =
     let sum = samePer |> flatten |> Array.sum
     sum
 ```
-Result (in `12`ms): `2545`
+Result (in `17`ms): `2545`
 ## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
 [Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
 ### part1
@@ -76,7 +76,7 @@ let part1 input =
     let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
     numWithCompleteOverlap
 ```
-Result (in `16`ms): `450`
+Result (in `14`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -84,7 +84,7 @@ let part2 input =
     let numWithPartialOverlap = pairs |> Array.filter (fun pair -> isRangeOverlap pair[0] pair[1]) |> Array.length
     numWithPartialOverlap
 ```
-Result (in `4`ms): `837`
+Result (in `5`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -98,7 +98,7 @@ let part1 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `37`ms): `SBPQRSCDF`
+Result (in `28`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -110,7 +110,7 @@ let part2 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `5`ms): `RGLVRCQSB`
+Result (in `15`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
 ### part1
@@ -124,7 +124,7 @@ let part1 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `15`ms): `1544`
+Result (in `18`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
@@ -136,7 +136,7 @@ let part2 input =
     let result = getMarkerEndIndex x markerLength
     result
 ```
-Result (in `10`ms): `2145`
+Result (in `3`ms): `2145`
 ## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
 [Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
 ### part1
@@ -151,7 +151,7 @@ let part1 input =
     let sum = sizes |> List.filter (fun size -> size <= 100000) |> List.sum
     sum
 ```
-Result (in `171`ms): `2061777`
+Result (in `155`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -172,7 +172,7 @@ let part2 input =
 
     smallestBigNuff
 ```
-Result (in `65`ms): `4473403`
+Result (in `99`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -206,7 +206,7 @@ let part1 input =
     let result = exceptEdges.Length + matrix.size.x * 2 + matrix.size.y * 2 - 4
     result
 ```
-Result (in `30`ms): `1803`
+Result (in `49`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -234,4 +234,55 @@ let part2 input =
     let result = scores |> List.max
     result
 ```
-Result (in `456`ms): `268912`
+Result (in `840`ms): `268912`
+## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
+[Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
+### part1
+```FSharp
+let part1 input =
+    let instructions = Parsing.parseRows input parseRow
+
+    let allHeadMoves =
+        let step lst (pt, len) = ([1..len] |> List.map (fun f -> pt)) |> List.append lst 
+        instructions |> Array.fold step []
+
+    let trail = getPath allHeadMoves Vector2D.empty
+
+    let allTails = trail |> List.map (fun f -> f.tail)
+    let result = allTails |> List.distinct |> List.length
+
+    result
+```
+Result (in `2602`ms): `6314`
+### part2
+```FSharp
+let part2 input =
+    let instructions = Parsing.parseRows input parseRow
+
+    let headMovesToTailPositions headMoves =
+        let trail = getPath headMoves Vector2D.empty
+        trail |> List.map (fun f -> f.tail) |> List.tail // never any movement first step
+
+    let absoluteToRelative (lst: Vector2D list) =
+        lst |> List.windowed 2 |> List.map (fun x -> x[1].sub x[0])
+
+    let relativeToAbsolute (lst: Vector2D list) =
+        lst |> List.fold (fun agg curr -> 
+            let newPos = curr.add (agg |> List.last)
+            [newPos] |> List.append agg
+            ) [Vector2D.empty]
+
+    let allHeadMoves =
+        let step lst (pt, len) = ([1..len] |> List.map (fun f -> pt)) |> List.append lst 
+        instructions |> Array.fold step []
+
+    let finalMoves = [1..9] |> List.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
+
+    let absolute = relativeToAbsolute finalMoves
+    //let rect = visualize absolute
+
+    let result = absolute |> List.distinct |> List.length
+
+    result
+```
+Result (in `22711`ms): `2504`
