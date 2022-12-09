@@ -23,9 +23,9 @@ let findFileInParents2 filename =
 let slnDir = (findFileInParents2 "AofC_2022.sln").Value.Directory
 let projDir = slnDir.GetDirectories("AofC_2022").[0]
 
-let getTypeFilePath (type_: Type) extension = 
+let getTypeFilePath (type_: Type) suffix = 
     let dir = projDir.GetDirectories("Days")[0];
-    let files = dir.GetFiles($"{type_.Name}.{extension}")
+    let files = dir.GetFiles($"{type_.Name}{suffix}")
     if files.Length = 1 then Some(files.[0]) else None
 
 let getFileContent (type_: Type) extension = match getTypeFilePath type_ extension with
@@ -44,7 +44,7 @@ let generateReadMe (type_: Type) (aofcInfo: Tools.AofCSiteInfo.DayInfo) (basePat
     let relativePath (filepath: string) = System.IO.Path.Combine(basePath.FullName, filepath).Substring(slnDir.FullName.Length).Replace(Path.DirectorySeparatorChar, '/')
 
     let getSnippet (method: Reflection.MemberInfo) = 
-        let fsContent = getFileContent method.DeclaringType "fs"
+        let fsContent = getFileContent method.DeclaringType ".fs"
         let m = Regex.Match(fsContent + "\nlet ", $@"(?<=\r|\n)let {method.Name}.+?(?=(\r|\n)let\s)", RegexOptions.Singleline)
         if m.Success then m.Value.Trim()
         else ""
@@ -56,7 +56,7 @@ let generateReadMe (type_: Type) (aofcInfo: Tools.AofCSiteInfo.DayInfo) (basePat
         stopWatch.Stop()
         let elapsed = int stopWatch.Elapsed.TotalMilliseconds
 
-        let visualizationFile = getTypeFilePath type_ ".gif"
+        let visualizationFile = getTypeFilePath type_ $"{method.Name}.gif"
 
         let methodResultString = 
             if methodResult.Contains("\n") then
@@ -66,12 +66,12 @@ let generateReadMe (type_: Type) (aofcInfo: Tools.AofCSiteInfo.DayInfo) (basePat
 ```FSharp
 {getSnippet method}
 ```
-{if visualizationFile.IsSome then $"![visualization]({relativePath visualizationFile.Value.Name})" else ""}
+{if visualizationFile.IsSome then $"![visualization]({relativePath visualizationFile.Value.Name})  " else ""}
 Result (in `{elapsed}`ms): {methodResultString}"""
 
-    let input = getFileContent type_ "txt"
+    let input = getFileContent type_ ".txt"
     $"""## [Day {aofcInfo.Day} - {aofcInfo.Title}]({aofcInfo.Url})
-[Source]({relativePath type_.Name + ".fs"}) | [Input]({match getTypeFilePath type_ "txt" with | Some f -> relativePath f.Name | None -> ""})  
+[Source]({relativePath type_.Name + ".fs"}) | [Input]({match getTypeFilePath type_ ".txt" with | Some f -> relativePath f.Name | None -> ""})  
 {getDayPartMethods type_ |> Array.map (fun f-> createMethodSummary input f) |> String.concat "\n"}
 """
 
@@ -138,6 +138,7 @@ let createDayFile day =
 
 [<EntryPoint>]
 let main argv =
+    writeReadme "README.md"
     if argv.Length > 0 then
         let arg = argv[0]
         match arg with
@@ -157,7 +158,7 @@ let main argv =
         // Roslyn would work but seems overkill
         let dayType = getDayTypes[day]
 
-        let input = match getTypeFilePath dayType "txt" with
+        let input = match getTypeFilePath dayType ".txt" with
                     | Some fi -> File.ReadAllText(fi.FullName)
                     | None -> ""
         

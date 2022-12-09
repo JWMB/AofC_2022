@@ -80,7 +80,7 @@ let visualize (pathSets: Vector2D array seq) =
         image
 
     let images = reduced |> Array.map createImage
-    Gif.saveAsGif "Days/D9.gif" (Gif.createGif images)
+    Gif.saveAsGif "Days/D9part2.gif" (Gif.createGif images)
 
 let absoluteToRelative (lst: Vector2D array) =
     lst |> Array.pairwise |> Array.map (fun (a, b) -> b.sub a)
