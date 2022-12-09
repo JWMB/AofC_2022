@@ -55,28 +55,31 @@ let getPath headMoves initialPosition =
         let newTail = current.tail.add tailMove
         { head = newHead; tail = newTail }
 
-    let perInstruction lst curr = 
-        let newState = moveSnake (lst |> List.last) curr
-        [newState] |> List.append lst
+    let perInstruction lst curr =
+        let newState = moveSnake (lst |> Array.last) curr
+        //newState :: lst
+        [|newState|] |> Array.append lst
+        //let newState = moveSnake (lst |> List.last) curr
+        //[newState] |> List.append lst
 
-    let folded = headMoves |> List.fold perInstruction [positions]
+    let folded = headMoves |> Array.fold perInstruction [|positions|]
     folded
 
-let visualize (lst: Vector2D list) =
-    let size = lst |> List.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
+let visualize (lst: Vector2D array) =
+    let size = lst |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
     size
 
 let part1 input =
     let instructions = Parsing.parseRows input parseRow
 
     let allHeadMoves =
-        let step lst (pt, len) = ([1..len] |> List.map (fun f -> pt)) |> List.append lst 
-        instructions |> Array.fold step []
+        let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
+        instructions |> Array.fold step [||]
 
     let trail = getPath allHeadMoves Vector2D.empty
 
-    let allTails = trail |> List.map (fun f -> f.tail)
-    let result = allTails |> List.distinct |> List.length
+    let allTails = trail |> Array.map (fun f -> f.tail)
+    let result = allTails |> Array.distinct |> Array.length
 
     result
     
@@ -85,26 +88,26 @@ let part2 input =
 
     let headMovesToTailPositions headMoves =
         let trail = getPath headMoves Vector2D.empty
-        trail |> List.map (fun f -> f.tail) |> List.tail // never any movement first step
+        trail |> Array.map (fun f -> f.tail) |> Array.tail // never any movement first step
 
-    let absoluteToRelative (lst: Vector2D list) =
-        lst |> List.windowed 2 |> List.map (fun x -> x[1].sub x[0])
+    let absoluteToRelative (lst: Vector2D array) =
+        lst |> Array.windowed 2 |> Array.map (fun x -> x[1].sub x[0])
 
-    let relativeToAbsolute (lst: Vector2D list) =
-        lst |> List.fold (fun agg curr -> 
-            let newPos = curr.add (agg |> List.last)
-            [newPos] |> List.append agg
-            ) [Vector2D.empty]
+    let relativeToAbsolute (lst: Vector2D array) =
+        lst |> Array.fold (fun agg curr -> 
+            let newPos = curr.add (agg |> Array.last)
+            [|newPos|] |> Array.append agg
+            ) [|Vector2D.empty|]
 
     let allHeadMoves =
-        let step lst (pt, len) = ([1..len] |> List.map (fun f -> pt)) |> List.append lst 
-        instructions |> Array.fold step []
+        let step lst (pt, len) = ([|1..len|] |> Array.map (fun f -> pt)) |> Array.append lst 
+        instructions |> Array.fold step [||]
 
-    let finalMoves = [1..9] |> List.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
+    let finalMoves = [|1..9|] |> Array.fold (fun agg _ -> headMovesToTailPositions agg |> absoluteToRelative) allHeadMoves
 
     let absolute = relativeToAbsolute finalMoves
     //let rect = visualize absolute
 
-    let result = absolute |> List.distinct |> List.length
+    let result = absolute |> Array.distinct |> Array.length
 
     result
