@@ -15,7 +15,7 @@ let part1 input =
     let result = Array.max (sums input)
     result
 ```
-Result (in `11`ms): `71934`
+Result (in `4`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -34,7 +34,7 @@ let part1 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `8`ms): `10624`
+Result (in `12`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -43,7 +43,7 @@ let part2 input =
     let sum = results |> Array.sum
     sum
 ```
-Result (in `12`ms): `14060`
+Result (in `5`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -76,7 +76,7 @@ let part1 input =
     let numWithCompleteOverlap = pairs |> Array.filter (fun pair -> isRangeWithin pair[0] pair[1] || isRangeWithin pair[1] pair[0]) |> Array.length
     numWithCompleteOverlap
 ```
-Result (in `13`ms): `450`
+Result (in `8`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -84,7 +84,7 @@ let part2 input =
     let numWithPartialOverlap = pairs |> Array.filter (fun pair -> isRangeOverlap pair[0] pair[1]) |> Array.length
     numWithPartialOverlap
 ```
-Result (in `4`ms): `837`
+Result (in `12`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -98,7 +98,7 @@ let part1 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `46`ms): `SBPQRSCDF`
+Result (in `36`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -110,4 +110,66 @@ let part2 input =
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-Result (in `5`ms): `RGLVRCQSB`
+Result (in `13`ms): `RGLVRCQSB`
+## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
+[Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
+### part1
+```FSharp
+let part1 input =
+    let markerLength = 4
+    let x = Parsing.cleanWithTrimEmptyLines input
+            |> stringToIndexedTuples
+            |> Seq.fold (findFirstNonRepeatingStringOfLength markerLength) (0, "")
+
+    let result = getMarkerEndIndex x markerLength
+    result
+```
+Result (in `14`ms): `1544`
+### part2
+```FSharp
+let part2 input =
+    let markerLength = 14
+    let x = Parsing.cleanWithTrimEmptyLines input
+            |> stringToIndexedTuples
+            |> Seq.fold (findFirstNonRepeatingStringOfLength markerLength) (0, "")
+
+    let result = getMarkerEndIndex x markerLength
+    result
+```
+Result (in `2`ms): `2145`
+## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
+[Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
+### part1
+```FSharp
+let part1 input =
+    let hierarchy = getHierarchy input
+
+    let dirsWithAllChildren = flattenChildren hierarchy |> Seq.toList |> List.filter (fun (f, _) -> isBranch f) |> List.map (fun (f, size) -> (getItemFromNode f, size))
+
+    let sizes = dirsWithAllChildren |> List.map (fun (f, children) -> (f, children |> List.sumBy (fun f -> f.size)))
+                    |> List.map (fun (_, size) -> size)
+    let sum = sizes |> List.filter (fun size -> size <= 100000) |> List.sum
+    sum
+```
+Result (in `170`ms): `2061777`
+### part2
+```FSharp
+let part2 input =
+    let maxSpace = 70000000
+    let needed = 30000000
+    let maxForExistingStructure = maxSpace - needed
+
+    let hierarchy = getHierarchy input
+
+    let dirsWithAllChildren = flattenChildren hierarchy |> Seq.toList |> List.filter (fun (f, _) -> isBranch f) |> List.map (fun (f, size) -> (getItemFromNode f, size))
+
+    let sizesSorted = dirsWithAllChildren |> List.map (fun (item, children) -> (item, children |> List.sumBy (fun item -> item.size)))
+                        |> List.map (fun (_, size) -> size) |> List.sort
+    let total = sizesSorted |> List.max
+    let overshoot = total - maxForExistingStructure
+
+    let smallestBigNuff = sizesSorted |> List.find (fun size -> size >= overshoot)
+
+    smallestBigNuff
+```
+Result (in `81`ms): `4473403`
