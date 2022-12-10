@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Include="Days\D10.txt" />
     <Content Include="Days\D4.txt" />
     <Content Include="Days\D3.txt" />
     <Content Include="Days\D2.txt" />
@@ -14,6 +15,8 @@
     <Content Include="Days\D7.txt" />
     <Content Include="Days\D8.txt" />
     <Content Include="Days\D9.txt" />
+    <Content Include="Days\D9part2.gif" />
+    <Compile Include="Days\D10.fs" />
     <Compile Include="Days\D5.fs" />
     <Compile Include="Days\D6.fs" />
     <Compile Include="Days\D7.fs" />
