@@ -47,7 +47,7 @@ let part2 input =
     sum
 ```
 
-Result (in `25`ms): `14060`
+Result (in `1`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -60,7 +60,7 @@ let part1 input =
     sum
 ```
 
-Result (in `2`ms): `7997`
+Result (in `5`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -164,7 +164,7 @@ let part1 input =
     sum
 ```
 
-Result (in `42`ms): `2061777`
+Result (in `44`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -186,7 +186,7 @@ let part2 input =
     smallestBigNuff
 ```
 
-Result (in `43`ms): `4473403`
+Result (in `45`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -221,7 +221,7 @@ let part1 input =
     result
 ```
 
-Result (in `16`ms): `1803`
+Result (in `19`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -250,7 +250,7 @@ let part2 input =
     result
 ```
 
-Result (in `331`ms): `268912`
+Result (in `373`ms): `268912`
 ## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
 [Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
 ### part1
@@ -262,7 +262,7 @@ let part1 input =
     result
 ```
 
-Result (in `240`ms): `6314`
+Result (in `378`ms): `6314`
 ### part2
 ```FSharp
 let part2 input =
@@ -284,4 +284,63 @@ let part2 input =
     result
 ```
 ![visualization](/AofC_2022/Days/D9part2.gif)  
-Result (in `1316`ms): `2504`
+Result (in `1847`ms): `2504`
+## [Day 10 - Cathode-Ray Tube](https://adventofcode.com/2022/day/10)
+[Source](/AofC_2022/Days/D10.fs) | [Input](/AofC_2022/Days/D10.txt)  
+### part1
+```FSharp
+let part1 input =
+    let rows = Parsing.parseRows input parseRow
+
+    let final = rows |> Seq.fold (fun (state, history) change ->
+                let newState = { CycleNum = change.CycleNum + state.CycleNum ; X = change.X + state.X; }
+
+                let remainder cycle = (cycle + 40 - 20) % 40
+
+                if remainder state.CycleNum > remainder newState.CycleNum then
+                    let stateToLog =
+                        let overshoot = remainder newState.CycleNum
+                        { CycleNum = newState.CycleNum - overshoot; X = state.X }
+                    (newState, [|stateToLog|] |> Array.append history)
+                else (newState, history)
+                ) ({ CycleNum = 0; X = 1; }, [||])
+
+    let result = (snd final) |> Array.map (fun f -> f.CycleNum * f.X) |> Array.sum
+
+    result
+```
+
+Result (in `0`ms): `12540`
+### part2
+```FSharp
+let part2 input =
+    let rows = Parsing.parseRows input parseRow
+
+    let sequenced = rows |> Seq.scan (fun (currState, _) change ->
+                        let newState = { CycleNum = change.CycleNum ; X = change.X + currState.X; }
+                        //let newState = match curr |> Array.head with
+                        //    | "addx" -> { CycleNum = 2; X = currState.X + (int curr[1]); }
+                        //    | "noop" -> { CycleNum = 1; X = currState.X; }
+                        //    | _ -> failwith ""
+                        (newState, {1..newState.CycleNum} |> Seq.map (fun f -> currState.X))
+                            ) ({ CycleNum = 0; X = 1; }, Seq.empty)
+
+    let flattened = sequenced |> Seq.map (fun (_, seq) -> seq) |> Seq.reduce Seq.append |> Seq.toArray
+
+    let renderRow arr = arr |> Array.indexed |> Array.map (fun (index, value) -> 
+                                                    let diff = value - index
+                                                    if abs diff <= 1 then "#" else "."
+                                                    ) |> String.concat ""
+    let result = flattened |> Array.chunkBySize 40 |> Array.map renderRow |> String.concat "\n"
+    result
+```
+
+Result (in `1`ms): 
+```
+####.####..##..####.####.#....#..#.####.
+#....#....#..#....#.#....#....#..#.#....
+###..###..#......#..###..#....####.###..
+#....#....#.....#...#....#....#..#.#....
+#....#....#..#.#....#....#....#..#.#....
+#....####..##..####.####.####.#..#.####.
+```
