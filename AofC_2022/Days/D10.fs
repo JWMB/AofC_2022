@@ -37,10 +37,6 @@ let part2 input =
 
     let sequenced = rows |> Seq.scan (fun (currState, _) change ->
                         let newState = { CycleNum = change.CycleNum ; X = change.X + currState.X; }
-                        //let newState = match curr |> Array.head with
-                        //    | "addx" -> { CycleNum = 2; X = currState.X + (int curr[1]); }
-                        //    | "noop" -> { CycleNum = 1; X = currState.X; }
-                        //    | _ -> failwith ""
                         (newState, {1..newState.CycleNum} |> Seq.map (fun f -> currState.X))
                             ) ({ CycleNum = 0; X = 1; }, Seq.empty)
 

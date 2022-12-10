@@ -1,11 +1,9 @@
 module D8
 
 open Tools
+open Tools.Geometry
 
 let parseRow row = row |> Seq.map int |> Seq.map (fun f -> f - 48) |> Seq.toArray
-type Vector2D = { x: int; y: int; }
-
-let add pt1 pt2 = { x = pt1.x + pt2.x; y = pt1.y + pt2.y }
 
 type Matrix<'T> = { data: 'T array array } with
     member this.getAt pt = this.data[pt.y][pt.x]
@@ -14,7 +12,7 @@ type Matrix<'T> = { data: 'T array array } with
 
 let rec lineOfSight (matrix: Matrix<'T>) startPoint step = seq { 
     if matrix.isInside startPoint then yield startPoint
-    let ptNext = add startPoint step
+    let ptNext = startPoint.add step
     if matrix.isInside ptNext then yield! lineOfSight matrix ptNext step
 }
 
@@ -63,7 +61,7 @@ let part2 input =
             (newMax, addToList lst curr)
 
     let getClearingDistance pt direction threshold = lineOfSight matrix pt direction |> Seq.fold (folder threshold) (0, [])
-    let getClearingDistanceX pt direction = snd (getClearingDistance (add pt direction) direction (matrix.getAt pt))
+    let getClearingDistanceX (pt: Vector2D) direction = snd (getClearingDistance (pt.add direction) direction (matrix.getAt pt))
     
     let getViewLengths pt = directions |> List.map (fun dir -> getClearingDistanceX pt dir) |> List.map (fun f -> f.Length)
 

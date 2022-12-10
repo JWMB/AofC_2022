@@ -1,35 +1,7 @@
 module D9
 
 open Tools
-
-type Vector2D = { x: int; y: int; } with
-    static member empty = { x = 0; y = 0; }
-    //TODO: how? static member (+) pt1 pt2 = pt1.add pt2
-    member this.mul scalar = { x = this.x * scalar; y = this.y * scalar; }
-    member this.add pt = { x = this.x + pt.x; y = this.y + pt.y; }
-    member this.sub pt = { x = this.x - pt.x; y = this.y - pt.y; }
-    member this.maxAbs = max (abs this.x) (abs this.y)
-    member this.withSideMaxLength l =
-        let normalize v = if v = 0 then 0 else v / abs v
-        { x = l * (normalize this.x); y = l * (normalize this.y); }
-
-type Rect = { topLeft: Vector2D; size: Vector2D } with
-    static member empty = { topLeft = Vector2D.empty; size = Vector2D.empty;  }
-    member this.left = this.topLeft.x
-    member this.right = this.topLeft.x + this.size.x
-    member this.top = this.topLeft.y
-    member this.bottom = this.topLeft.y + this.size.y
-    member this.width = this.size.x
-    member this.height = this.size.y
-
-    member this.expand pt = 
-        let expand (value, length) newVal =
-            if newVal < value then (newVal, (value - newVal) + length) 
-            elif newVal > (value + length) then (value, newVal - value)
-            else (value, length)
-        let leftWidth = expand (this.topLeft.x, this.size.x) pt.x
-        let topHeight = expand (this.topLeft.y, this.size.y) pt.y
-        { topLeft = { x = fst leftWidth; y = fst topHeight}; size = { x = snd leftWidth; y = snd topHeight; }}
+open Tools.Geometry
 
 let parseRow row =
     let itemsToCmd (arr: string array) = 
@@ -69,18 +41,16 @@ let getTailPath headPositions (initialPosition: Vector2D) =
 
 
 let visualize (pathSets: Vector2D array seq) =
-    let getBoundingRect arr = arr |> Array.fold (fun (agg: Rect) curr -> agg.expand curr) Rect.empty
-
     let reduced = pathSets |> Seq.map Array.distinct |> Seq.toArray
 
-    let fullBoundingRect = reduced |> Array.reduce Array.append |> Array.distinct |> getBoundingRect
+    let fullBoundingRect = reduced |> Array.reduce Array.append |> Array.distinct |> Rect.getBoundingRect
     let createImage pathSet = 
         let offset = fullBoundingRect.topLeft 
         let image = pathSet |> Array.toSeq |> Seq.map (fun pt -> (pt.x - offset.x, pt.y - offset.y, 'x')) |> Gif.createImageWithPixelSeq (fullBoundingRect.width+1) (fullBoundingRect.height+1)
         image
 
     let images = reduced |> Array.map createImage
-    Gif.saveAsGif "Days/D9part2.gif" (Gif.createGif images)
+    Gif.saveAsGif "Days/D9part2.gif" (Gif.createGif 50 images)
 
 let absoluteToRelative (lst: Vector2D array) =
     lst |> Array.pairwise |> Array.map (fun (a, b) -> b.sub a)
