@@ -60,7 +60,7 @@ let part1 input =
     sum
 ```
 
-Result (in `5`ms): `7997`
+Result (in `2`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -100,26 +100,32 @@ Result (in `1`ms): `837`
 let part1 input =
     let data = ParsedInput.Parse input
 
-    let func = Instruction.Execute true
-    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
+    let reverseLift = true
+    let modifiedStacks = data.Instructions |> aggregate Array.fold (Instruction.Execute reverseLift) data.Stacks
+
+    //let allStates = data.Instructions |> aggregate Seq.scan (Instruction.Execute reverseLift) data.Stacks
+    //visualize "Days/D5part1.gif" allStates
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-
-Result (in `2`ms): `SBPQRSCDF`
+![visualization](/AofC_2022/Days/D5part1.gif)  
+Result (in `26`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
     let data = ParsedInput.Parse input
 
-    let func = Instruction.Execute false
-    let modifiedStacks = foldWithFunction func data.Instructions data.Stacks
+    let reverseLift = false
+    let modifiedStacks = data.Instructions |> aggregate Array.fold (Instruction.Execute reverseLift) data.Stacks
+    
+    //let allStates = data.Instructions |> aggregate Seq.scan (Instruction.Execute reverseLift) data.Stacks
+    //visualize "Days/D5part2.gif" allStates
 
     let result = modifiedStacks |> Array.map (fun f -> f[0]) |> Array.map string |> String.concat ""
     result
 ```
-
+![visualization](/AofC_2022/Days/D5part2.gif)  
 Result (in `2`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
@@ -127,28 +133,29 @@ Result (in `2`ms): `RGLVRCQSB`
 ```FSharp
 let part1 input =
     let markerLength = 4
+
     let x = Parsing.cleanWithTrimEmptyLines input
-            |> stringToIndexedTuples
+            |> Seq.indexed
             |> Seq.fold (findFirstNonRepeatingStringOfLength markerLength) (0, "")
 
     let result = getMarkerEndIndex x markerLength
     result
 ```
 
-Result (in `1`ms): `1544`
+Result (in `0`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
     let markerLength = 14
     let x = Parsing.cleanWithTrimEmptyLines input
-            |> stringToIndexedTuples
+            |> Seq.indexed
             |> Seq.fold (findFirstNonRepeatingStringOfLength markerLength) (0, "")
 
     let result = getMarkerEndIndex x markerLength
     result
 ```
 
-Result (in `1`ms): `2145`
+Result (in `0`ms): `2145`
 ## [Day 7 - No Space Left On Device](https://adventofcode.com/2022/day/7)
 [Source](/AofC_2022/Days/D7.fs) | [Input](/AofC_2022/Days/D7.txt)  
 ### part1
@@ -164,7 +171,7 @@ let part1 input =
     sum
 ```
 
-Result (in `44`ms): `2061777`
+Result (in `50`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -186,7 +193,7 @@ let part2 input =
     smallestBigNuff
 ```
 
-Result (in `45`ms): `4473403`
+Result (in `53`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -221,7 +228,7 @@ let part1 input =
     result
 ```
 
-Result (in `19`ms): `1803`
+Result (in `20`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -238,7 +245,7 @@ let part2 input =
             (newMax, addToList lst curr)
 
     let getClearingDistance pt direction threshold = lineOfSight matrix pt direction |> Seq.fold (folder threshold) (0, [])
-    let getClearingDistanceX pt direction = snd (getClearingDistance (add pt direction) direction (matrix.getAt pt))
+    let getClearingDistanceX (pt: Vector2D) direction = snd (getClearingDistance (pt.add direction) direction (matrix.getAt pt))
     
     let getViewLengths pt = directions |> List.map (fun dir -> getClearingDistanceX pt dir) |> List.map (fun f -> f.Length)
 
@@ -250,7 +257,7 @@ let part2 input =
     result
 ```
 
-Result (in `373`ms): `268912`
+Result (in `419`ms): `268912`
 ## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
 [Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
 ### part1
@@ -262,7 +269,7 @@ let part1 input =
     result
 ```
 
-Result (in `378`ms): `6314`
+Result (in `384`ms): `6314`
 ### part2
 ```FSharp
 let part2 input =
@@ -284,7 +291,7 @@ let part2 input =
     result
 ```
 ![visualization](/AofC_2022/Days/D9part2.gif)  
-Result (in `1847`ms): `2504`
+Result (in `1830`ms): `2504`
 ## [Day 10 - Cathode-Ray Tube](https://adventofcode.com/2022/day/10)
 [Source](/AofC_2022/Days/D10.fs) | [Input](/AofC_2022/Days/D10.txt)  
 ### part1
@@ -318,10 +325,6 @@ let part2 input =
 
     let sequenced = rows |> Seq.scan (fun (currState, _) change ->
                         let newState = { CycleNum = change.CycleNum ; X = change.X + currState.X; }
-                        //let newState = match curr |> Array.head with
-                        //    | "addx" -> { CycleNum = 2; X = currState.X + (int curr[1]); }
-                        //    | "noop" -> { CycleNum = 1; X = currState.X; }
-                        //    | _ -> failwith ""
                         (newState, {1..newState.CycleNum} |> Seq.map (fun f -> currState.X))
                             ) ({ CycleNum = 0; X = 1; }, Seq.empty)
 
@@ -335,7 +338,7 @@ let part2 input =
     result
 ```
 
-Result (in `1`ms): 
+Result (in `0`ms): 
 ```
 ####.####..##..####.####.#....#..#.####.
 #....#....#..#....#.#....#....#..#.#....
