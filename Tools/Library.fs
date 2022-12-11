@@ -7,6 +7,10 @@ open SixLabors.ImageSharp
 module RxCurry =
     let matches pattern input = Regex.Matches(input, pattern)
     let split pattern input = Regex.Split(input, pattern)
+    let splitTrimNoEmpty pattern input = 
+        Regex.Split(input, pattern) 
+        |> Array.map (fun f -> f.Trim())
+        |> Array.filter (fun f -> f.Length > 0)
 
 module Parsing =
     let cleanWithTrimEmptyLines (input: string) = input.Replace("\r", "").Trim('\n')
