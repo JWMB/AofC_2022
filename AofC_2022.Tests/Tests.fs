@@ -397,7 +397,7 @@ Monkey 3:
     If true: throw to monkey 0
     If false: throw to monkey 1
 """
-    Assert.Equal(10605, D11.part1 input)
-    Assert.Equal(0, D11.part2 input)
+    Assert.Equal(10605I, D11.part1 input)
+    Assert.Equal(2713310158I, D11.part2 input)
 
 

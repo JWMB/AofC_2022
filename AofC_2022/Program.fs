@@ -152,8 +152,8 @@ let main argv =
         | _ ->
             printfn $"Command not found {arg}"
     else
-        let method = D10.part2
-        let day = 10
+        let method = D11.part1
+        let day = 11
         // TODO: how to figure out which day method corresponds to? D4.part2.GetType() returns a local runtime type, not associated with the target
         // Roslyn would work but seems overkill
         let dayType = getDayTypes[day]
