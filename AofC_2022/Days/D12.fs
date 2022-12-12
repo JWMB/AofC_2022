@@ -48,17 +48,17 @@ let getPossible (grid: Grid) alreadyVisited currentPos canMoveTest =
 let findPaths grid startPos finalPosTest canMoveTest =
     let costGrid = [|0..grid.Rect.height|] |> Array.map (fun f -> [|0..grid.Rect.width|] |> Array.map (fun z -> 99999))
 
-    let rec loop pos path = seq {
-        let possible = getPossible grid path pos canMoveTest
-        let isFinal = possible |> Array.filter (fun p -> finalPosTest p)
-        if isFinal |> Array.length > 0 then
-            yield (path |> Array.append [|isFinal |> Array.head|])
-        elif possible.Length > 0 then
-            let currentCost = path.Length
-            for pt in possible do
-                let prevCost = costGrid[pt.y][pt.x]
-                if currentCost < prevCost then
-                    costGrid[pt.y][pt.x] <- currentCost
+    let rec loop pos (path: Vector2D array) = seq {
+        let currentCost = path.Length
+        let prevCost = costGrid[pos.y][pos.x]
+        if currentCost < prevCost then
+            costGrid[pos.y][pos.x] <- currentCost
+            let possible = getPossible grid path pos canMoveTest
+            let isFinal = possible |> Array.filter (fun p -> finalPosTest p)
+            if isFinal |> Array.length > 0 then
+                yield (path |> Array.append [|isFinal |> Array.head|])
+            elif possible.Length > 0 then
+                for pt in possible do
                     yield! (loop pt (path |> Array.append [|pt|]))
         }
     loop startPos [|startPos|]
