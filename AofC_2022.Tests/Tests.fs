@@ -413,6 +413,6 @@ acctuvwj
 abdefghi
 """
     Assert.Equal(31, D12.part1 input)
-    Assert.Equal(0, D12.part2 input)
+    Assert.Equal(29, D12.part2 input)
 
 

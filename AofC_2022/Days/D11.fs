@@ -5,7 +5,6 @@ open System.Text.RegularExpressions
 
 let parseRow row = [| row |]
 
-//type MonkeyTest = { Execute: int -> bool; TrueTarget: int; FalseTarget: int }
 type Monkey = { Operation: int64 -> int64; Test: int64-> int64; Divisor: int64; }
 type MonkeyState = { Items: int64 array; NumInspected: int64 }
 

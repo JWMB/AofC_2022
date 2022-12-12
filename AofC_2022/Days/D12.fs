@@ -15,7 +15,11 @@ type Grid = { Rect: Rect; Data: int array array; } with
     member this.isValid pt = pt.x >= 0 && pt.y >= 0 && pt.x < this.Rect.right && pt.y < this.Rect.bottom
     member this.getNeighbors toPt = directions |> Array.map (fun pt -> pt.add toPt) |> Array.filter (fun pt -> this.isValid pt)
     member this.getAt pt = this.Data[pt.y][pt.x]
-
+    member this.toString =
+        [|0..this.Data.Length-1|] |> Array.map (fun y -> 
+            let row = this.Data[y] |> Array.map (fun v -> string (char (if v > 126 then 126 else v)))
+            row |> String.concat ""
+            ) |> String.concat "\n"
 
 let findChar rows char = 
     rows |> Array.indexed |> Array.map (fun (y, row) -> 
@@ -32,21 +36,23 @@ let parse input =
     let rows = Parsing.parseRows (input.Replace("S", "a").Replace("E", "z"))  parseRow
     (startPos, finalPos, Grid.Create (rows |> Array.map (fun r -> r |> Array.map int)))
 
-let getPossible (grid: Grid) alreadyVisited currentPos =
+let getPossible (grid: Grid) alreadyVisited currentPos canMoveTest =
         let currentVal = grid.getAt currentPos
         let notVisited = grid.getNeighbors currentPos |> Array.except alreadyVisited
         let withValues = notVisited |> Array.map (fun pt -> (pt, grid.getAt pt))
 
-        let possible = withValues |> Array.filter (fun (_, v) -> v <= (currentVal + 1)) |> Array.map (fun (pt, _) -> pt)
+        //let possible = withValues |> Array.filter (fun (_, v) -> v <= (currentVal + 1)) |> Array.map (fun (pt, _) -> pt)
+        let possible = withValues |> Array.filter (fun (_, v) -> canMoveTest v currentVal) |> Array.map (fun (pt, _) -> pt)
         possible
 
-let findPaths grid startPos finalPos =
+let findPaths grid startPos finalPosTest canMoveTest =
     let costGrid = [|0..grid.Rect.height|] |> Array.map (fun f -> [|0..grid.Rect.width|] |> Array.map (fun z -> 99999))
 
     let rec loop pos path = seq {
-        let possible = getPossible grid path pos
-        if possible |> Array.contains finalPos then
-            yield (path |> Array.append [|finalPos|])
+        let possible = getPossible grid path pos canMoveTest
+        let isFinal = possible |> Array.filter (fun p -> finalPosTest p)
+        if isFinal |> Array.length > 0 then
+            yield (path |> Array.append [|isFinal |> Array.head|])
         elif possible.Length > 0 then
             let currentCost = path.Length
             for pt in possible do
@@ -60,7 +66,7 @@ let findPaths grid startPos finalPos =
 let part1 input =
     let (startPos, finalPos, grid) = parse input        
 
-    let paths = findPaths grid startPos finalPos
+    let paths = findPaths grid startPos (fun p -> p = finalPos) (fun nextVal currentVal -> nextVal <= (currentVal + 1))
     let shortest = paths |> Seq.sortBy (fun f -> f.Length) |> Seq.head
 
     let result = shortest.Length - 1
@@ -77,8 +83,6 @@ let part2 input =
 
     let startPositions = findChar (Parsing.parseRows input parseRow) 'a' |> Array.append [|startPos|]
 
-    // TODO: reverse, go from final to any 'a'
-
     let excludeInnerPatches =
         // performance - get continuous areas of 'a', change all internal except edges to very high value (= don't try that path)
         let surrounded = startPositions 
@@ -94,15 +98,11 @@ let part2 input =
 
     let startPositions = excludeInnerPatches
 
-    let ooo = startPositions |> Array.map (fun p ->
-            let paths = (findPaths grid p finalPos) |> Seq.toArray |> Array.filter (fun f -> f.Length > 0)
-            if paths.Length = 0 then
-                999999
-            else
-                let shortest = paths |> Seq.sortBy (fun f -> f.Length) |> Seq.head
-                let result = shortest.Length - 1
-                result
-    )
+    //let s = grid.toString
 
-    let result = ooo |> Array.sort |> Array.head
+    let paths = findPaths grid finalPos (fun p -> startPositions |> Array.contains p) (fun nextVal currentVal -> nextVal >= currentVal - 1)
+    let shortest = paths |> Seq.sortBy (fun f -> f.Length) |> Seq.head
+
+    let result = shortest.Length - 1
+
     result
