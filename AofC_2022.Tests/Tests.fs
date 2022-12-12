@@ -401,3 +401,18 @@ Monkey 3:
     Assert.Equal(2713310158I, D11.part2 input)
 
 
+
+
+[<Fact>]
+let ``D12`` () =
+    let input = """
+Sabqponm
+abcryxxl
+accszExk
+acctuvwj
+abdefghi
+"""
+    Assert.Equal(31, D12.part1 input)
+    Assert.Equal(0, D12.part2 input)
+
+

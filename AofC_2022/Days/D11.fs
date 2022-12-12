@@ -6,8 +6,8 @@ open System.Text.RegularExpressions
 let parseRow row = [| row |]
 
 //type MonkeyTest = { Execute: int -> bool; TrueTarget: int; FalseTarget: int }
-type Monkey = { Operation: bigint -> bigint; Test: bigint -> bigint }
-type MonkeyState = { Items: bigint array; NumInspected: bigint }
+type Monkey = { Operation: int64 -> int64; Test: int64-> int64}
+type MonkeyState = { Items: int64 array; NumInspected: int64 }
 
 let parseSection input = 
     let afterColon str = (RxCurry.split ":" str)[1]
@@ -21,7 +21,7 @@ let parseSection input =
         let getTerm term old =
             match term with
             | "old" -> old
-            | _ as v -> bigint (int v)
+            | _ as v -> int64 (int v)
 
         let op old = 
             let t1 = getTerm (fst terms) old
@@ -37,14 +37,14 @@ let parseSection input =
         //divisible by 23
         //    If true: throw to monkey 2
         //    If false: throw to monkey 3
-        let divisibleBy = bigint (int Regex.Match(str, @"divisible by (\d+)").Groups[1].Value)
-        let branches = Regex.Matches(str, @"If (true|false).+(\d+)", RegexOptions.Multiline) |> Seq.map (fun m -> (m.Groups[1].Value = "true", bigint (int m.Groups[2].Value))) |> Map.ofSeq
-        let f v = branches[v % divisibleBy = 0I]
+        let divisibleBy = int64 (int Regex.Match(str, @"divisible by (\d+)").Groups[1].Value)
+        let branches = Regex.Matches(str, @"If (true|false).+(\d+)", RegexOptions.Multiline) |> Seq.map (fun m -> (m.Groups[1].Value = "true", int64 (int m.Groups[2].Value))) |> Map.ofSeq
+        let f v = branches[v % divisibleBy = 0L]
         f
     (
         {
-            Items = afterColon subsections[1] |> RxCurry.splitTrimNoEmpty "," |> Array.map (fun f -> bigint (int f));
-            NumInspected = 0I;
+            Items = afterColon subsections[1] |> RxCurry.splitTrimNoEmpty "," |> Array.map (fun f -> int64 (int f));
+            NumInspected = 0L;
         },
         {
             Operation = parseOperation subsections[2];
@@ -77,7 +77,7 @@ let run initialStates (monkeys: Monkey array) reliefDivider numRounds =
                                     let itemsToThis = itemsAndTargets |> Array.filter (fun (_, target) -> target = i) |> Array.map (fun (item, _) -> item)
                                     itemsToThis |> Array.append states[i].Items
 
-                            { Items = newItems; NumInspected = state.NumInspected + (if i = monkeyIndex then (bigint itemsAndTargets.Length) else 0UL); }
+                            { Items = newItems; NumInspected = state.NumInspected + (if i = monkeyIndex then (int64 itemsAndTargets.Length) else 0L); }
                         )
         result
 
@@ -104,15 +104,9 @@ let part1 input =
     let monkeys = parsed |> Array.map (fun (_, monkey) -> monkey)
 
     let numRounds = 20
-    let reliefDivider = 3I
+    let reliefDivider = 3L
     let final = run states monkeys reliefDivider numRounds
 
-    //let topInspections =
-    //    final |> Array.map (fun x -> x.NumInspected)
-    //    |> Array.sortByDescending (fun f -> f) |> Array.take 2
-
-    //let result = topInspections |> Array.reduce (fun a b -> a * b)
-    //result
     topInspectionsProduct 2 final
     
 let part2 input =
@@ -120,8 +114,8 @@ let part2 input =
     let states = parsed |> Array.map (fun (state, _) -> state)
     let monkeys = parsed |> Array.map (fun (_, monkey) -> monkey)
 
-    let numRounds = 10000
-    let reliefDivider = 1I
+    let numRounds = 20
+    let reliefDivider = 1L
     let final = run states monkeys reliefDivider numRounds
 
     let result = topInspectionsProduct 2 final

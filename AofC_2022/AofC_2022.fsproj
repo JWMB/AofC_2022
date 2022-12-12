@@ -7,6 +7,7 @@
   <ItemGroup>
     <Content Include="Days\D10.txt" />
     <Content Include="Days\D11.txt" />
+    <Content Include="Days\D12.txt" />
     <Content Include="Days\D4.txt" />
     <Content Include="Days\D3.txt" />
     <Content Include="Days\D2.txt" />
@@ -21,6 +22,7 @@
     <Content Include="Days\D9part2.gif" />
     <Compile Include="Days\D10.fs" />
     <Compile Include="Days\D11.fs" />
+    <Compile Include="Days\D12.fs" />
     <Compile Include="Days\D5.fs" />
     <Compile Include="Days\D6.fs" />
     <Compile Include="Days\D7.fs" />

@@ -138,7 +138,6 @@ let createDayFile day =
 
 [<EntryPoint>]
 let main argv =
-    writeReadme "README.md"
     if argv.Length > 0 then
         let arg = argv[0]
         match arg with
@@ -152,7 +151,7 @@ let main argv =
         | _ ->
             printfn $"Command not found {arg}"
     else
-        let method = D11.part1
+        let method = D11.part2
         let day = 11
         // TODO: how to figure out which day method corresponds to? D4.part2.GetType() returns a local runtime type, not associated with the target
         // Roslyn would work but seems overkill
