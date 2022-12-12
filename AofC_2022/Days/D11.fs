@@ -6,7 +6,7 @@ open System.Text.RegularExpressions
 let parseRow row = [| row |]
 
 //type MonkeyTest = { Execute: int -> bool; TrueTarget: int; FalseTarget: int }
-type Monkey = { Operation: int64 -> int64; Test: int64-> int64}
+type Monkey = { Operation: int64 -> int64; Test: int64-> int64; Divisor: int64; }
 type MonkeyState = { Items: int64 array; NumInspected: int64 }
 
 let parseSection input = 
@@ -40,7 +40,9 @@ let parseSection input =
         let divisibleBy = int64 (int Regex.Match(str, @"divisible by (\d+)").Groups[1].Value)
         let branches = Regex.Matches(str, @"If (true|false).+(\d+)", RegexOptions.Multiline) |> Seq.map (fun m -> (m.Groups[1].Value = "true", int64 (int m.Groups[2].Value))) |> Map.ofSeq
         let f v = branches[v % divisibleBy = 0L]
-        f
+        (f, divisibleBy)
+
+    let testInfo = parseTest subsections[3]
     (
         {
             Items = afterColon subsections[1] |> RxCurry.splitTrimNoEmpty "," |> Array.map (fun f -> int64 (int f));
@@ -48,17 +50,17 @@ let parseSection input =
         },
         {
             Operation = parseOperation subsections[2];
-            Test = parseTest subsections[3];
+            Test = fst testInfo;
+            Divisor = snd testInfo;
         }
     )
 
 let parseInput input = input |> Parsing.cleanWithTrimEmptyLines |> RxCurry.split "\n\n" |> Array.map parseSection
 
-let run initialStates (monkeys: Monkey array) reliefDivider numRounds =
-    let doWork worryDivider monkey state =
+let run initialStates (monkeys: Monkey array) postProcess numRounds =
+    let doWork postProcess monkey state =
         let workOnItem item = 
-            let newLevel = monkey.Operation item
-            newLevel / worryDivider
+            monkey.Operation item |> postProcess
         let itemsAndTargets =
             state.Items |> Array.map (fun item ->
                 let newLevel = workOnItem item
@@ -81,7 +83,7 @@ let run initialStates (monkeys: Monkey array) reliefDivider numRounds =
                         )
         result
 
-    let doWorkX monkey state = doWork reliefDivider monkey state
+    let doWorkX monkey state = doWork postProcess monkey state
 
     let doRound states =
         let afterRound = 
@@ -104,8 +106,8 @@ let part1 input =
     let monkeys = parsed |> Array.map (fun (_, monkey) -> monkey)
 
     let numRounds = 20
-    let reliefDivider = 3L
-    let final = run states monkeys reliefDivider numRounds
+    let postProcess v = v / 3L
+    let final = run states monkeys postProcess numRounds
 
     topInspectionsProduct 2 final
     
@@ -114,9 +116,11 @@ let part2 input =
     let states = parsed |> Array.map (fun (state, _) -> state)
     let monkeys = parsed |> Array.map (fun (_, monkey) -> monkey)
 
-    let numRounds = 20
-    let reliefDivider = 1L
-    let final = run states monkeys reliefDivider numRounds
+    let divisorProduct = monkeys |> Array.map (fun f -> f.Divisor) |> Array.reduce (fun a b -> a * b)
+
+    let numRounds = 10000
+    let postProcess v = v % divisorProduct
+    let final = run states monkeys postProcess numRounds
 
     let result = topInspectionsProduct 2 final
     result
