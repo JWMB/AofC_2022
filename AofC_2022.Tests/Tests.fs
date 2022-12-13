@@ -445,7 +445,8 @@ let ``D13`` () =
 [1,[2,[3,[4,[5,6,7]]]],8,9]
 [1,[2,[3,[4,[5,6,0]]]],8,9]
 """
-    Assert.Equal(0, D13.part1 input)
+
+    Assert.Equal(13, D13.part1 input)
     Assert.Equal(0, D13.part2 input)
 
 
