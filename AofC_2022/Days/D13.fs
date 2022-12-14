@@ -61,82 +61,71 @@ let rec getAsNumberSequence nested = seq {
                 yield! (rest |> Seq.reduce Seq.append)
     }
 
+let isFirstLargest ((a: Nested array), (b: Nested array)) =
+    let rec loop (a: Nested) (b: Nested) =
+        match a with
+        | Number aN ->
+            match b with
+            | Number bN ->
+                if aN < bN then Some(true)
+                elif aN > bN then Some(false)
+                else None
+            | Child bC -> loop (Child [|a|]) b
+        | Child aC ->
+            match b with
+            | Number bN -> loop a (Child [|b|])
+            | Child bC ->
+                let zipped = Seq.zip aC bC
+                let mapped = zipped |> Seq.map (fun (l, r) -> loop l r)
+                    
+                let found = mapped |> Seq.tryFind (fun v -> v.IsSome)
+                if found.IsSome then found.Value
+                else 
+                    if aC.Length = bC.Length then None
+                    else Some(aC.Length < bC.Length)
+                    
+    let result = loop (Child a) (Child b)
+    if result.IsNone then
+        let dbg = $"{toString a}\n{toString b}"
+        true
+        //failwith "Equal"
+    else
+        result.Value
+
 let parseSection section =
     let rows =RxCurry.splitTrimNoEmpty "\n" section |> Array.map parseRow
     (rows[0], rows[1])
 
 
 let part1 input =
-    //let t1 = parseRow "[[1],[2,3,4]]"
-    //let t1 = parseRow "[[]]"
-    //let t1s = toString t1 
-       
-    let isFirstLargest ((a: Nested array), (b: Nested array)) =
-        //let getAsNumber x = match x with | Number n -> Some(n) | _ -> None
-        //let getAsChildren x = match x with | Child n -> Some(n) | _ -> None
-
-        let rec loop (a: Nested) (b: Nested) =
-            match a with
-            | Number aN ->
-                match b with
-                | Number bN ->
-                    if aN < bN then Some(true)
-                    elif aN > bN then Some(false)
-                    else None
-                | Child bC -> loop (Child [|a|]) b
-            | Child aC ->
-                match b with
-                | Number bN -> loop a (Child [|b|])
-                | Child bC ->
-                    let zipped = Seq.zip aC bC
-                    let mapped = zipped |> Seq.map (fun (l, r) -> loop l r)
-                    
-                    let found = mapped |> Seq.tryFind (fun v -> v.IsSome)
-                    if found.IsSome then found.Value
-                    else 
-                        if aC.Length = bC.Length then None
-                        else Some(aC.Length < bC.Length)
-                    
-        let result = loop (Child a) (Child b)
-        if result.IsNone then failwith "Equal"
-        result.Value
-
-    //        let aAsNumber = getAsNumber a
-    //        let bAsNumber = getAsNumber b
-    //        if aAsNumber.IsSome && bAsNumber.IsSome then
-    //            if aAsNumber.Value < bAsNumber.Value then Some(true)
-    //            elif aAsNumber.Value > bAsNumber.Value then Some(false)
-    //            else None
-    //        elif aAsNumber.IsNone && bAsNumber.IsNone then
-    //            loop 
-    //        else
-    //            false
-
-    //let isFirstLargest (a, b) =
-    //    let sA = getAsNumberSequence (Child a)
-    //    let sB = getAsNumberSequence (Child b)
-
-    //    let comparison (l: int) (r: int) =
-    //        if l < r then Some(true)
-    //        elif l > r then Some(false)
-    //        else None
-
-    //    let zipped = Seq.zip sA sB
-    //    let mapped = zipped |> Seq.map (fun (a, b) -> comparison a b)
-    //    let found = mapped |> Seq.tryFind (fun v -> v.IsSome)
-    //    if found.IsSome then found.Value.Value
-    //    else (sA |> Seq.length) < (sB |> Seq.length)
-
     let pairs = input |> Parsing.cleanWithTrimEmptyLines |> RxCurry.splitTrimNoEmpty @"\n\n" |> Array.map parseSection
     //let oppo = pairs |> Array.map (fun (a, _) -> toString a)
-    let oppo = pairs |> Array.map (fun (a, _) -> getAsNumberSequence (Child a) |> Seq.toArray)
+    //let oppo = pairs |> Array.map (fun (a, _) -> getAsNumberSequence (Child a) |> Seq.toArray)
 
     let indicesOfCorrect = pairs |> Array.map isFirstLargest |> Array.indexed |> Array.filter (fun (_, v) -> v) |> Array.map (fun (i, _) -> i)
 
     let result = indicesOfCorrect |> Array.map (fun f -> f + 1) |> Array.sum
-    result // 5478 too low
+    result
     
 let part2 input =
-    //let rows = Parsing.parseRows input parseRow
-    let result = 0
+    let dividersInput = """
+[[2]]
+[[6]]
+"""
+    let added = [|input; dividersInput|] |> String.concat ""
+    let full = (added |> Parsing.cleanWithTrimEmptyLines).Replace("\n\n", "\n") //|> RxCurry.splitTrimNoEmpty @"\n\n" |> Array.map parseSection
+    let all = full |> RxCurry.splitTrimNoEmpty "\n" |> Array.map parseRow
+
+    //let indicesOfCorrect = pairs |> Array.map isFirstLargest |> Array.indexed |> Array.filter (fun (_, v) -> v) |> Array.map (fun (i, _) -> i)
+
+    let sorted = all |> Array.sortWith (fun a b ->
+                            let firstIsLargest = isFirstLargest (a, b) 
+                            if firstIsLargest then 1 else -1) |> Array.rev
+
+    let dividers = dividersInput |> RxCurry.splitTrimNoEmpty "\n" |> Array.map parseRow
+
+    let findIndex value = sorted |> Array.findIndex (fun f -> f = value)
+    let indices = dividers |> Array.map findIndex
+
+    let result = indices |> Array.map (fun f -> f + 1) |> Array.reduce (fun a b -> a * b)
     result
