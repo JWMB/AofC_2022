@@ -16,7 +16,7 @@ let part1 input =
     result
 ```
 
-Result (in `5`ms): `71934`
+Result (in `3`ms): `71934`
 ### part2
 ```FSharp
 let part2 input =
@@ -25,7 +25,7 @@ let part2 input =
     result
 ```
 
-Result (in `3`ms): `211447`
+Result (in `4`ms): `211447`
 ## [Day 2 - Rock Paper Scissors](https://adventofcode.com/2022/day/2)
 [Source](/AofC_2022/Days/D2.fs) | [Input](/AofC_2022/Days/D2.txt)  
 ### part1
@@ -37,7 +37,7 @@ let part1 input =
     sum
 ```
 
-Result (in `5`ms): `10624`
+Result (in `10`ms): `10624`
 ### part2
 ```FSharp
 let part2 input =
@@ -47,7 +47,7 @@ let part2 input =
     sum
 ```
 
-Result (in `5`ms): `14060`
+Result (in `15`ms): `14060`
 ## [Day 3 - Rucksack Reorganization](https://adventofcode.com/2022/day/3)
 [Source](/AofC_2022/Days/D3.fs) | [Input](/AofC_2022/Days/D3.txt)  
 ### part1
@@ -60,7 +60,7 @@ let part1 input =
     sum
 ```
 
-Result (in `13`ms): `7997`
+Result (in `29`ms): `7997`
 ### part2
 ```FSharp
 let part2 input =
@@ -72,7 +72,7 @@ let part2 input =
     sum
 ```
 
-Result (in `5`ms): `2545`
+Result (in `4`ms): `2545`
 ## [Day 4 - Camp Cleanup](https://adventofcode.com/2022/day/4)
 [Source](/AofC_2022/Days/D4.fs) | [Input](/AofC_2022/Days/D4.txt)  
 ### part1
@@ -83,7 +83,7 @@ let part1 input =
     numWithCompleteOverlap
 ```
 
-Result (in `10`ms): `450`
+Result (in `8`ms): `450`
 ### part2
 ```FSharp
 let part2 input =
@@ -92,7 +92,7 @@ let part2 input =
     numWithPartialOverlap
 ```
 
-Result (in `5`ms): `837`
+Result (in `4`ms): `837`
 ## [Day 5 - Supply Stacks](https://adventofcode.com/2022/day/5)
 [Source](/AofC_2022/Days/D5.fs) | [Input](/AofC_2022/Days/D5.txt)  
 ### part1
@@ -110,7 +110,7 @@ let part1 input =
     result
 ```
 ![visualization](/AofC_2022/Days/D5part1.gif)  
-Result (in `22`ms): `SBPQRSCDF`
+Result (in `19`ms): `SBPQRSCDF`
 ### part2
 ```FSharp
 let part2 input =
@@ -126,7 +126,7 @@ let part2 input =
     result
 ```
 ![visualization](/AofC_2022/Days/D5part2.gif)  
-Result (in `6`ms): `RGLVRCQSB`
+Result (in `5`ms): `RGLVRCQSB`
 ## [Day 6 - Tuning Trouble](https://adventofcode.com/2022/day/6)
 [Source](/AofC_2022/Days/D6.fs) | [Input](/AofC_2022/Days/D6.txt)  
 ### part1
@@ -142,7 +142,7 @@ let part1 input =
     result
 ```
 
-Result (in `6`ms): `1544`
+Result (in `15`ms): `1544`
 ### part2
 ```FSharp
 let part2 input =
@@ -171,7 +171,7 @@ let part1 input =
     sum
 ```
 
-Result (in `130`ms): `2061777`
+Result (in `146`ms): `2061777`
 ### part2
 ```FSharp
 let part2 input =
@@ -193,7 +193,7 @@ let part2 input =
     smallestBigNuff
 ```
 
-Result (in `86`ms): `4473403`
+Result (in `67`ms): `4473403`
 ## [Day 8 - Treetop Tree House](https://adventofcode.com/2022/day/8)
 [Source](/AofC_2022/Days/D8.fs) | [Input](/AofC_2022/Days/D8.txt)  
 ### part1
@@ -228,7 +228,7 @@ let part1 input =
     result
 ```
 
-Result (in `44`ms): `1803`
+Result (in `34`ms): `1803`
 ### part2
 ```FSharp
 let part2 input =
@@ -257,7 +257,7 @@ let part2 input =
     result
 ```
 
-Result (in `533`ms): `268912`
+Result (in `491`ms): `268912`
 ## [Day 9 - Rope Bridge](https://adventofcode.com/2022/day/9)
 [Source](/AofC_2022/Days/D9.fs) | [Input](/AofC_2022/Days/D9.txt)  
 ### part1
@@ -269,7 +269,7 @@ let part1 input =
     result
 ```
 
-Result (in `411`ms): `6314`
+Result (in `368`ms): `6314`
 ### part2
 ```FSharp
 let part2 input =
@@ -291,7 +291,7 @@ let part2 input =
     result
 ```
 ![visualization](/AofC_2022/Days/D9part2.gif)  
-Result (in `2076`ms): `2504`
+Result (in `1815`ms): `2504`
 ## [Day 10 - Cathode-Ray Tube](https://adventofcode.com/2022/day/10)
 [Source](/AofC_2022/Days/D10.fs) | [Input](/AofC_2022/Days/D10.txt)  
 ### part1
@@ -317,7 +317,7 @@ let part1 input =
     result
 ```
 
-Result (in `2`ms): `12540`
+Result (in `1`ms): `12540`
 ### part2
 ```FSharp
 let part2 input =
@@ -338,7 +338,7 @@ let part2 input =
     result
 ```
 
-Result (in `11`ms): 
+Result (in `8`ms): 
 ```
 ####.####..##..####.####.#....#..#.####.
 #....#....#..#....#.#....#....#..#.#....
@@ -363,7 +363,7 @@ let part1 input =
     topInspectionsProduct 2 final
 ```
 
-Result (in `16`ms): `57348`
+Result (in `13`ms): `57348`
 ### part2
 ```FSharp
 let part2 input =
@@ -381,7 +381,7 @@ let part2 input =
     result
 ```
 
-Result (in `374`ms): `14106266886`
+Result (in `298`ms): `14106266886`
 ## [Day 12 - Hill Climbing Algorithm](https://adventofcode.com/2022/day/12)
 [Source](/AofC_2022/Days/D12.fs) | [Input](/AofC_2022/Days/D12.txt)  
 ### part1
@@ -396,7 +396,7 @@ let part1 input =
     result
 ```
 
-Result (in `5765`ms): `339`
+Result (in `4550`ms): `339`
 ### part2
 ```FSharp
 let part2 input =
@@ -435,4 +435,98 @@ let part2 input =
     result
 ```
 
-Result (in `14578`ms): `332`
+Result (in `11588`ms): `332`
+## [Day 13 - Distress Signal](https://adventofcode.com/2022/day/13)
+[Source](/AofC_2022/Days/D13.fs) | [Input](/AofC_2022/Days/D13.txt)  
+### part1
+```FSharp
+let part1 input =
+    let pairs = input |> Parsing.cleanWithTrimEmptyLines |> RxCurry.splitTrimNoEmpty @"\n\n" |> Array.map parseSection
+    //let oppo = pairs |> Array.map (fun (a, _) -> toString a)
+    //let oppo = pairs |> Array.map (fun (a, _) -> getAsNumberSequence (Child a) |> Seq.toArray)
+
+    let indicesOfCorrect = pairs |> Array.map isFirstLargest |> Array.indexed |> Array.filter (fun (_, v) -> v) |> Array.map (fun (i, _) -> i)
+
+    let result = indicesOfCorrect |> Array.map (fun f -> f + 1) |> Array.sum
+    result
+```
+
+Result (in `15`ms): `6395`
+### part2
+```FSharp
+let part2 input =
+    let dividersInput = """
+[[2]]
+[[6]]
+"""
+    let added = [|input; dividersInput|] |> String.concat ""
+    let full = (added |> Parsing.cleanWithTrimEmptyLines).Replace("\n\n", "\n") //|> RxCurry.splitTrimNoEmpty @"\n\n" |> Array.map parseSection
+    let all = full |> RxCurry.splitTrimNoEmpty "\n" |> Array.map parseRow
+
+    //let indicesOfCorrect = pairs |> Array.map isFirstLargest |> Array.indexed |> Array.filter (fun (_, v) -> v) |> Array.map (fun (i, _) -> i)
+
+    let sorted = all |> Array.sortWith (fun a b ->
+                            let firstIsLargest = isFirstLargest (a, b) 
+                            if firstIsLargest then 1 else -1) |> Array.rev
+
+    let dividers = dividersInput |> RxCurry.splitTrimNoEmpty "\n" |> Array.map parseRow
+
+    let findIndex value = sorted |> Array.findIndex (fun f -> f = value)
+    let indices = dividers |> Array.map findIndex
+
+    let result = indices |> Array.map (fun f -> f + 1) |> Array.reduce (fun a b -> a * b)
+    result
+```
+
+Result (in `21`ms): `24921`
+## [Day 14 - Regolith Reservoir](https://adventofcode.com/2022/day/14)
+[Source](/AofC_2022/Days/D14.fs) | [Input](/AofC_2022/Days/D14.txt)  
+### part1
+```FSharp
+let part1 input =
+    let linePoints = Parsing.parseRows input parseRow |> Array.reduce Array.append
+
+    let grid = Grid.create linePoints { x = 500; y = 0; }
+
+    let rec untilOutsize cnt =
+        let foundRestingPlace = fall grid grid.Source
+        if foundRestingPlace.IsNone then cnt
+        else untilOutsize (cnt + 1)
+
+    let numDrops = untilOutsize 0
+    numDrops
+```
+
+Result (in `939`ms): `795`
+### part2
+```FSharp
+let part2 input =
+    let linePoints = Parsing.parseRows input parseRow |> Array.reduce Array.append
+    let grid = Grid.create linePoints { x = 500; y = 0; }
+
+    let newHeight = grid.Rect.bottom + 2 // for bedrock
+
+    // expand grid so that width = height and source is in middle of x axis
+    let newWidth = 2 * newHeight //bah, just make it big enough
+    let newLeft = min (grid.Source.x - newWidth) grid.Rect.left
+    let newRight = max (grid.Source.x + newWidth) grid.Rect.right
+
+    let bedrock = [|newLeft..newRight|] |> Array.map(fun x -> { x = x; y = newHeight; })
+    
+    let grid = Grid.create (grid.Rocks |> Array.append bedrock) grid.Source
+
+    //let before = grid.render
+
+    let rec untilOutsize cnt =
+        let foundRestingPlace = fall grid grid.Source
+        if foundRestingPlace.IsNone then cnt
+        else untilOutsize (cnt + 1)
+        
+    let numDrops = untilOutsize 0
+
+    //let after = grid.render
+
+    numDrops
+```
+
+Result (in `13861`ms): `30214`
