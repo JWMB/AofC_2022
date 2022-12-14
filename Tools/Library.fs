@@ -50,6 +50,7 @@ module Geometry =
         member this.height = this.size.y
 
         member this.move pt = { topLeft = this.topLeft.add pt; size = this.size; }
+        member this.normalize = { topLeft = Vector2D.empty; size = this.size; } // TODO: normalize negative size?
 
         member this.expand pt = 
             let expand (value, length) newVal =
@@ -59,6 +60,9 @@ module Geometry =
             let leftWidth = expand (this.topLeft.x, this.size.x) pt.x
             let topHeight = expand (this.topLeft.y, this.size.y) pt.y
             { topLeft = { x = fst leftWidth; y = fst topHeight}; size = { x = snd leftWidth; y = snd topHeight; }}
+
+        member this.contains pt =
+            pt.x >= this.left && pt.y >= this.top && pt.x <= this.right && pt.y <= this.bottom
 
 module Gif =
     let charToColor char = if char = ' ' then Color.Black else Color.White
