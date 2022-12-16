@@ -482,7 +482,19 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3
 """
-    Assert.Equal(26, D15.part1 input)
-    Assert.Equal(0, D15.part2 input)
+//    let input = """
+//Sensor at x=8, y=7: closest beacon is at x=2, y=10
+//Sensor at x=12, y=14: closest beacon is at x=10, y=16
+//Sensor at x=20, y=14: closest beacon is at x=25, y=17
+//Sensor at x=16, y=7: closest beacon is at x=15, y=3
+//"""
+//
+//
+//Sensor at x=0, y=11: closest beacon is at x=2, y=10
+
+//Sensor at x=17, y=20: closest beacon is at x=21, y=22
+
+    //Assert.Equal(26, D15.part1WithY input 10)
+    Assert.Equal(56000011, D15.part2WithMinMax input 0 20 )
 
 

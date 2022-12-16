@@ -40,7 +40,13 @@ module Geometry =
 
     type Rect = { topLeft: Vector2D; size: Vector2D } with
         static member empty = { topLeft = Vector2D.empty; size = Vector2D.empty;  }
-        static member getBoundingRect positions = positions |> Seq.tail |> Seq.fold (fun (agg: Rect) curr -> agg.expand curr) (Rect.empty.move (positions |> Seq.head))
+        static member getBoundingRect positions =
+            let xs = positions |> Seq.map (fun pt -> pt.x)
+            let ys = positions |> Seq.map (fun pt -> pt.y)
+            let tl = { x = xs |> Seq.min; y = ys |> Seq.min}
+            let br = { x = xs |> Seq.max; y = ys |> Seq.max}
+            { topLeft = tl; size = { x = br.x - tl.x; y = br.y - tl.y }}
+            //positions |> Seq.tail |> Seq.fold (fun (agg: Rect) curr -> agg.expand curr) (Rect.empty.move (positions |> Seq.head))
 
         member this.left = this.topLeft.x
         member this.right = this.topLeft.x + this.size.x
