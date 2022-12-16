@@ -482,19 +482,26 @@ Sensor at x=16, y=7: closest beacon is at x=15, y=3
 Sensor at x=14, y=3: closest beacon is at x=15, y=3
 Sensor at x=20, y=1: closest beacon is at x=15, y=3
 """
-//    let input = """
-//Sensor at x=8, y=7: closest beacon is at x=2, y=10
-//Sensor at x=12, y=14: closest beacon is at x=10, y=16
-//Sensor at x=20, y=14: closest beacon is at x=25, y=17
-//Sensor at x=16, y=7: closest beacon is at x=15, y=3
-//"""
-//
-//
-//Sensor at x=0, y=11: closest beacon is at x=2, y=10
 
-//Sensor at x=17, y=20: closest beacon is at x=21, y=22
-
-    //Assert.Equal(26, D15.part1WithY input 10)
+    Assert.Equal(26, D15.part1WithY input 10)
     Assert.Equal(56000011, D15.part2WithMinMax input 0 20 )
+
+
+[<Fact>]
+let ``D16`` () =
+    let input = """
+Valve AA has flow rate=0; tunnels lead to valves DD, II, BB
+Valve BB has flow rate=13; tunnels lead to valves CC, AA
+Valve CC has flow rate=2; tunnels lead to valves DD, BB
+Valve DD has flow rate=20; tunnels lead to valves CC, AA, EE
+Valve EE has flow rate=3; tunnels lead to valves FF, DD
+Valve FF has flow rate=0; tunnels lead to valves EE, GG
+Valve GG has flow rate=0; tunnels lead to valves FF, HH
+Valve HH has flow rate=22; tunnel leads to valve GG
+Valve II has flow rate=0; tunnels lead to valves AA, JJ
+Valve JJ has flow rate=21; tunnel leads to valve II
+"""
+    Assert.Equal(1651, D16.part1 input)
+    Assert.Equal(0, D16.part2 input)
 
 
