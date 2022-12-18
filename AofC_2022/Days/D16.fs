@@ -47,28 +47,22 @@ let part1 input =
 
     let maxPossibleFlow = rooms.Values |> Seq.map (fun r -> r.Rate) |> Seq.sum
 
-    let rec traverse (state: State) room lastRoom = //roomIdsSinceLastChoice
+    let rec traverse (state: State) room roomIdsSinceLastChoice =
         let state = state.AddRoomToHistory room
         if state.TotalTime = maxTime then state
         elif state.TotalTime > maxTime then state
         else
-            //let roomIdsSinceLastChoice = [||]
-            let otherRooms (state: State) (connections: string array) =
-                //let connections = connections |> Array.except roomIdsSinceLastChoice
-                //if connections.Length = 0 then state
-                //else
-                //    let since = 
-                //        if connections.Length = 1 then roomIdsSinceLastChoice |> Array.append [|room.Id|]
-                //        else [||]
-                //    let updated = state.Update 1
-                //    let childStates = connections |> Array.map (fun roomId -> traverse updated rooms[roomId] room)
-                //    let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
-                //    best
-
-                let updated = state.Update 1
-                let childStates = connections |> Array.map (fun roomId -> traverse updated rooms[roomId] room)
-                let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
-                best
+            let otherRooms (state: State) roomIdsSinceLastChoice =
+                let connections = room.Connections |> Array.except roomIdsSinceLastChoice
+                if connections.Length = 0 then state // nowhere to go, finished
+                else
+                    let since = 
+                        if connections.Length = 1 then roomIdsSinceLastChoice |> Array.append [|room.Id|]
+                        else [| room.Id |]
+                    let updated = state.Update 1
+                    let childStates = connections |> Array.map (fun nextRoomId -> traverse updated rooms[nextRoomId] since)
+                    let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
+                    best
 
             let turnedOn = state.turnValveIfNotOn room
 
@@ -78,16 +72,13 @@ let part1 input =
             else
                 let childStates =
                     [|
-                        // Explore other connections (except going back)
-                        let otherThanBack = room.Connections |> Array.except [| lastRoom.Id |]
-                        if otherThanBack.Length = 0 then state // not a good path - quit early
-                        else otherRooms state otherThanBack
+                        otherRooms state roomIdsSinceLastChoice
                     |] |> Array.append (
                         // Also if we can turn this on, try that and then continue exploring
                         if turnedOn.IsSome then
                             let newState = turnedOn.Value
                             [| 
-                                if newState.TotalTime < maxTime then otherRooms newState room.Connections
+                                if newState.TotalTime < maxTime then otherRooms newState [||]
                                 else newState
                             |]
                         else [||]
@@ -95,20 +86,7 @@ let part1 input =
                 let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
                 best
 
-            ////let alternatives = [| state |] |> Array.append ( if turnedOn.IsSome then )
-            //if turnedOn.IsSome then
-            //    let newState = turnedOn.Value
-            //    if newState.TotalFlow = maxPossibleFlow then newState.Update (maxTime - state.TotalTime)
-            //    elif newState.TotalTime < maxTime then otherRooms newState room.Connections
-            //    else newState
-            //else
-            //    // We're not opening this valve
-            //    // No reason to go directly back to room we came from
-            //    let otherThanBack = room.Connections |> Array.except [| lastRoom.Id |]
-            //    if otherThanBack.Length = 0 then state // quit early, not a good path
-            //    else otherRooms state otherThanBack
-
-    let best = traverse state rooms[startAt] rooms[startAt]
+    let best = traverse state rooms[startAt] [||]
     //let history = best.History |> Array.rev
     let result = best.TotalSteam
     result
