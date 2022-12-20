@@ -505,3 +505,27 @@ Valve JJ has flow rate=21; tunnel leads to valve II
     Assert.Equal(0, D16.part2 input)
 
 
+[<Fact>]
+let ``D17`` () =
+    let input = """
+>>><<><>><<<>><>>><<<>>><<<><<<>><>><<>>
+"""
+    Assert.Equal(0, D17.part1 input)
+    Assert.Equal(0, D17.part2 input)
+
+
+[<Fact>]
+let ``D18`` () =
+    let input = """
+"""
+    Assert.Equal(0, D18.part1 input)
+    Assert.Equal(0, D18.part2 input)
+
+
+[<Fact>]
+let ``D19`` () =
+    let input = """
+"""
+    Assert.Equal(0, D19.part1 input)
+    Assert.Equal(0, D19.part2 input)
+

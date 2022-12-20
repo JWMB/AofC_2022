@@ -12,6 +12,9 @@
     <Content Include="Days\D14.txt" />
     <Content Include="Days\D15.txt" />
     <Content Include="Days\D16.txt" />
+    <Content Include="Days\D17.txt" />
+    <Content Include="Days\D18.txt" />
+    <Content Include="Days\D19.txt" />
     <Content Include="Days\D4.txt" />
     <Content Include="Days\D3.txt" />
     <Content Include="Days\D2.txt" />
@@ -31,6 +34,9 @@
     <Compile Include="Days\D14.fs" />
     <Compile Include="Days\D15.fs" />
     <Compile Include="Days\D16.fs" />
+    <Compile Include="Days\D17.fs" />
+    <Compile Include="Days\D18.fs" />
+    <Compile Include="Days\D19.fs" />
     <Compile Include="Days\D5.fs" />
     <Compile Include="Days\D6.fs" />
     <Compile Include="Days\D7.fs" />
