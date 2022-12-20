@@ -10,11 +10,11 @@ let parseRow row =
     { Id = m.Groups["valve"].Value; Rate = int m.Groups["rate"].Value; Connections = m.Groups["connections"].Value |> RxCurry.splitTrimNoEmpty "," }
 
 type State = { Valves: Map<string, int>; TotalTime: int; TotalSteam: int; TotalFlow: int; History: string array } with
-    member this.Update steps =
+    member this.Update steps historyComment =
         { this with
             TotalTime = this.TotalTime + steps;
             TotalSteam = this.TotalSteam + this.TotalFlow * steps;
-            History = this.History |> Array.append [| $"Update {steps} - {this.debugState}" |]
+            History = this.History |> Array.append [| $"Update {steps} - {this.debugState} {historyComment}" |]
         }
 
     member this.AddRoomToHistory room =
@@ -25,7 +25,7 @@ type State = { Valves: Map<string, int>; TotalTime: int; TotalSteam: int; TotalF
 
     member this.turnOnValve room = 
             let valves = this.Valves |> Map.change room.Id (fun _ -> Some(room.Rate))
-            { (this.Update 1) with
+            { (this.Update 1 "") with
                     Valves = valves;
                     TotalFlow = valves.Values |> Seq.sum;
                     History = this.History |> Array.append [| $"TurnOn {room.Id} - {this.debugState}" |]
@@ -75,136 +75,56 @@ let findShortestRoutesBetweenValves rooms =
     let map = withShortest |> Map.ofList
     map
 
+let getBest states = states |> Array.maxBy (fun f -> f.TotalSteam)
+
+let run (rooms: Map<string, Room>) maxTime =
+    let shortest = findShortestRoutesBetweenValves rooms.Values
+
+    let rec loop (state: State) room =
+        let remainingOpen = state.Valves |> Map.filter (fun k v -> v = 0 && rooms[k].Rate > 0) |> Map.toArray |> Array.map (fun (k, _) -> k)
+
+        if remainingOpen.Length = 0 then
+            state.Update (maxTime - state.TotalTime) "Done"
+        elif state.TotalTime = maxTime then
+            state
+        else
+            if remainingOpen |> Array.contains room.Id then
+                let newState = state.turnOnValve room
+                loop newState room
+            else
+                let goTo fromId toId =
+                    let route = shortest[(fromId, toId)]
+                    let time = min (maxTime - state.TotalTime) route.Length
+                    state.Update time $"{fromId}->{toId}"
+                let children = remainingOpen |> Array.map (fun dst -> 
+                                let best = loop (goTo room.Id dst) rooms[dst]
+                                best
+                    )
+                getBest children
+        
+    // first we need to get to a room
+    let state = { State.create (rooms |> Map.map (fun _ _ -> 0)) with TotalTime = 0; }
+    let startAt = "AA"
+
+    let startRoutes = rooms |> Map.filter (fun k v -> v.Rate > 0) |> Map.map (fun k v -> (findShortestRoute rooms rooms[startAt] v).Value)
+    let best = startRoutes |> Map.toArray |> Array.map (fun (k, path) -> 
+                            let newState = state.Update path.Length $"Start {k}"
+                            let finalState = loop newState rooms[k]
+                            finalState 
+                            ) |> getBest
+    best
+
+
 let part1 input =
     let rooms = Parsing.parseRows input parseRow |> Array.map (fun r -> (r.Id, r)) |> Map.ofArray
 
-    let shortest = findShortestRoutesBetweenValves rooms.Values
-
-    let startAt = "AA"
-    //let timeToMove = 1
-    //let timeToOperate = 1
-    let maxTime = 30
-
-    let state = { State.create (rooms |> Map.map (fun _ _ -> 0)) with TotalTime = 0; }
-
-    let maxPossibleFlow = rooms.Values |> Seq.sumBy (fun f -> f.Rate)
-
-    let rec loop (state: State) room roomIdsSinceLastChoice =
-        let remainingOpen = state.Valves |> Map.filter (fun k v -> v = 0 && rooms[k].Rate > 0) |> Map.toArray |> Array.map (fun (k, _) -> k)
-
-        let goTo fromId toId =
-            let route = shortest[(fromId, toId)]
-            let time = min (maxTime - state.TotalTime) route.Length
-            state.Update time
-
-        if remainingOpen.Length = 0 then
-            state.Update (maxTime - state.TotalTime)
-        elif state.TotalTime = maxTime then
-            state
-        elif state.TotalTime > maxTime then
-            state
-        else
-            let openIfPossible = 
-                if remainingOpen |> Array.contains room.Id then
-                    let newState = state.turnOnValve room
-                    [| loop newState room [||] |]
-                else
-                    [| |]
-
-            let proceedWithoutOpening = 
-                // Not turning the valve on - no need to go back to previous "linear" locations (where we didn't make any choices)
-                let potentialTargets = remainingOpen |> Array.except roomIdsSinceLastChoice |> Array.except [| room.Id |]
-                if potentialTargets.Length = 0 then
-                    [| state.Update (maxTime - state.TotalTime) |]
-                else
-                    let roomIdsSinceLastChoice = if potentialTargets.Length = 1 then [| room.Id |] else addTo roomIdsSinceLastChoice room.Id
-                    let children = potentialTargets |> Array.map (fun dst -> 
-                                                let best = loop (goTo room.Id dst) rooms[dst] roomIdsSinceLastChoice
-                                                best
-                                                )
-                    [| children |> Array.maxBy (fun f -> f.TotalSteam) |]
-
-            let options = proceedWithoutOpening |> Array.append openIfPossible
-            //let options = [| |] 
-            //            |> Array.append (
-            //                if remainingOpen |> Array.contains room.Id then
-            //                    let newState = state.turnOnValve room
-            //                    [| loop newState room [||] |]
-            //                else
-            //                    [| |]
-            //                )
-            //            |> Array.append (
-            //                // Not turning the valve on - no need to go back to previous "linear" locations (where we didn't make any choices)
-            //                let potentialTargets = remainingOpen |> Array.except roomIdsSinceLastChoice |> Array.except [| room.Id |]
-            //                if potentialTargets.Length = 0 then
-            //                    [| state.Update (maxTime - state.TotalTime) |]
-            //                else
-            //                    let roomIdsSinceLastChoice = if potentialTargets.Length = 1 then [| room.Id |] else addTo roomIdsSinceLastChoice room.Id
-            //                    let children = potentialTargets |> Array.map (fun dst -> 
-            //                                                let best = loop (goTo room.Id dst) rooms[dst] roomIdsSinceLastChoice
-            //                                                best
-            //                                                )
-            //                    [| children |> Array.maxBy (fun f -> f.TotalSteam) |]
-            //            )
-            let best = options |> Array.maxBy (fun f -> f.TotalSteam)
-            best
-
-    // first we need to get to a room
-    let startRoutes = rooms |> Map.filter (fun k v -> v.Rate > 0) |> Map.map (fun k v -> (findShortestRoute rooms rooms[startAt] v).Value)
-    let osso = startRoutes |> Map.toArray |> Array.map (fun (k, path) -> 
-                            let newState = state.Update path.Length
-                            let finalState = loop newState rooms[k] [||]
-                            finalState 
-                            ) |> Array.maxBy (fun f -> f.TotalSteam)
-    let aa = osso
-    //let aa = ooo state rooms[startAt]
-
-
-    let rec traverse (state: State) room roomIdsSinceLastChoice =
-        let state = state.AddRoomToHistory room
-        if state.TotalTime = maxTime then state
-        elif state.TotalTime > maxTime then state
-        else
-            let otherRooms (state: State) roomIdsSinceLastChoice =
-                let connections = room.Connections |> Array.except roomIdsSinceLastChoice
-                if connections.Length = 0 then state // nowhere to go, finished
-                else
-                    let since = 
-                        if connections.Length = 1 then roomIdsSinceLastChoice |> Array.append [|room.Id|]
-                        else [| room.Id |]
-                    let updated = state.Update 1
-                    let childStates = connections |> Array.map (fun nextRoomId -> traverse updated rooms[nextRoomId] since)
-                    let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
-                    best
-
-            let turnedOn = state.turnValveIfNotOn room
-
-            let isFinal = turnedOn.IsSome && turnedOn.Value.TotalFlow = maxPossibleFlow
-            if isFinal then
-                turnedOn.Value.Update (maxTime - turnedOn.Value.TotalTime)
-            else
-                let childStates =
-                    [|
-                        otherRooms state roomIdsSinceLastChoice
-                    |] |> Array.append (
-                        // Also if we can turn this on, try that and then continue exploring
-                        if turnedOn.IsSome then
-                            let newState = turnedOn.Value
-                            [| 
-                                if newState.TotalTime < maxTime then otherRooms newState [||]
-                                else newState
-                            |]
-                        else [||]
-                    )
-                let best = childStates |> Array.maxBy (fun f -> f.TotalSteam)
-                best
-
-    let best = traverse state rooms[startAt] [||]
-    //let history = best.History |> Array.rev
+    let best = run rooms 30
     let result = best.TotalSteam
     result
     
 let part2 input =
-    let rows = Parsing.parseRows input parseRow
-    let result = 0
+    let rooms = Parsing.parseRows input parseRow |> Array.map (fun r -> (r.Id, r)) |> Map.ofArray
+
+    let best = run rooms 26
+    let result = best.TotalSteam
     result

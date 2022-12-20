@@ -502,7 +502,7 @@ Valve II has flow rate=0; tunnels lead to valves AA, JJ
 Valve JJ has flow rate=21; tunnel leads to valve II
 """
     Assert.Equal(1651, D16.part1 input)
-    Assert.Equal(0, D16.part2 input)
+    Assert.Equal(1707, D16.part2 input)
 
 
 [<Fact>]
