@@ -27,6 +27,8 @@ module StringEx =
     let splitJoin splitBy funcManipulateArray (str: string) = Regex.Split(str, splitBy) |> funcManipulateArray |> String.concat splitBy
 
 module Geometry =
+    type Vector3D = { x: int; y: int; z: int }
+
     type Vector2D = { x: int; y: int; } with
         static member empty = { x = 0; y = 0; }
         //TODO: how? static member (+) pt1 pt2 = pt1.add pt2

@@ -517,8 +517,21 @@ let ``D17`` () =
 [<Fact>]
 let ``D18`` () =
     let input = """
+2,2,2
+1,2,2
+3,2,2
+2,1,2
+2,3,2
+2,2,1
+2,2,3
+2,2,4
+2,2,6
+1,2,5
+3,2,5
+2,1,5
+2,3,5
 """
-    Assert.Equal(0, D18.part1 input)
+    Assert.Equal(64, D18.part1 input)
     Assert.Equal(0, D18.part2 input)
 
 

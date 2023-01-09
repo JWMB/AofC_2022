@@ -33,14 +33,21 @@ let getRocks =
     let rocks = input |> Parsing.cleanWithTrimEmptyLines |> RxCurry.splitTrimNoEmpty("\n\n") |> Array.map parseSection
     rocks
 
-type Grid = { Rect: Rect } with
-    member this.IsOccupied pt = false //printf $"{pt}" "#"
-    member this.Add points ptOffset = this
+type Grid = { Rect: Rect; Rows: string array } with
+    member this.IsFree pt =
+        if pt.y < 0 then true
+        elif pt.y >= this.Rect.bottom then false
+        else this.Rows[pt.y][pt.x] <> '#'
+    member this.Add points ptOffset =
+        //this.Rows
+        this
         //let addToGrid grid rock pt =
         ////rock |> Array.map (fun p -> )
         //grid 
-    static member create = { Rect = Rect.empty } //[| [|1..width|] |> Array.map (fun _ -> "#") |> String.concat "" |]
+    static member create = { Rect = Rect.empty; Rows = [||] } //[| [|1..width|] |> Array.map (fun _ -> "#") |> String.concat "" |]
 
+// |.......|
+// |#######|
 
 let part1 (input: string) =
     let rocks = getRocks
@@ -53,16 +60,12 @@ let part1 (input: string) =
                                 x = if jets[index % jets.Length] = '<' then -1 else 1;
                                 y = 0;
                            }
-    let hasOverlapAtPoint grid pt =
-        if pt.y < 0 || pt.y >= grid.Rect.bottom then false
-        else grid.IsOccupied pt
 
-
-    let isPossible grid rock pt =
+    let isPossible (grid: Grid) rock pt =
         let rockWidth = rock |> Array.map (fun pt -> pt.x) |> Array.max
         if pt.x < 0 || rockWidth + pt.x > width then false
         else
-            let hasOverlap = rock |> Array.exists (fun p -> hasOverlapAtPoint grid (p.add pt))
+            let hasOverlap = rock |> Array.exists (fun p -> grid.IsFree (p.add pt))
             hasOverlap
 
     let fall grid rock index =

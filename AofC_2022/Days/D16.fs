@@ -57,13 +57,26 @@ let findShortestRoute (roomsById: Map<string, Room>) fromRoom toRoom =
             
     traverse fromRoom [||]
 
-let findShortestRoutesBetweenValves rooms =
-    let rec combine numItems list = 
-        match numItems, list with
-        | 0, _ -> [[]]
-        | _, [] -> []
-        | k, (x::xs) -> List.map ((@) [x]) (combine (k-1) xs) @ combine k xs
+let rec combine numItems list = 
+    match numItems, list with
+    | 0, _ -> [[]]
+    | _, [] -> []
+    | k, (x::xs) -> List.map ((@) [x]) (combine (k-1) xs) @ combine k xs
 
+let permutations numItems list =
+    let rec distribute e = function
+      | [] -> [[e]]
+      | x::xs' as xs -> (e::xs)::[for xs in distribute e xs' -> x::xs]
+
+    let rec permute = function
+      | [] -> [[]]
+      | e::xs -> List.collect (distribute e) (permute xs)
+
+    let combos = combine numItems list
+    let result = combos |> List.map (fun l -> permute l)
+    result
+
+let findShortestRoutesBetweenValves rooms =
     let roomsWithValves = rooms |> Seq.filter (fun f -> f.Rate > 0) |> Seq.toArray
     let roomsById = rooms |> Seq.map (fun r -> (r.Id, r)) |> Map
 
@@ -77,39 +90,62 @@ let findShortestRoutesBetweenValves rooms =
 
 let getBest states = states |> Array.maxBy (fun f -> f.TotalSteam)
 
-let run (rooms: Map<string, Room>) maxTime =
+let run (rooms: Map<string, Room>) maxTime numPlayers =
     let shortest = findShortestRoutesBetweenValves rooms.Values
 
-    let rec loop (state: State) room =
+    let waitUntilTimeUp (state: State) = state.Update (maxTime - state.TotalTime) "Done"
+
+    let rec loop (state: State) (playerRooms: Room array) =
+        // TODO: can be part of State instead of being recalculated
         let remainingOpen = state.Valves |> Map.filter (fun k v -> v = 0 && rooms[k].Rate > 0) |> Map.toArray |> Array.map (fun (k, _) -> k)
 
         if remainingOpen.Length = 0 then
-            state.Update (maxTime - state.TotalTime) "Done"
+            waitUntilTimeUp state
         elif state.TotalTime = maxTime then
             state
         else
-            if remainingOpen |> Array.contains room.Id then
-                let newState = state.turnOnValve room
-                loop newState room
+            let goTo state fromId toId =
+                let route = shortest[(fromId, toId)]
+                let time = min (maxTime - state.TotalTime) route.Length
+                state.Update time $"{fromId}->{toId}"
+
+            let newState = playerRooms |> Array.fold (fun (agg: State) curr -> agg.turnOnValve curr) state
+
+            let remainingOpen = remainingOpen |> Array.except (playerRooms |> Array.map (fun r -> r.Id))
+            if remainingOpen.Length = 0 then
+                waitUntilTimeUp newState
             else
-                let goTo fromId toId =
-                    let route = shortest[(fromId, toId)]
-                    let time = min (maxTime - state.TotalTime) route.Length
-                    state.Update time $"{fromId}->{toId}"
-                let children = remainingOpen |> Array.map (fun dst -> 
-                                let best = loop (goTo room.Id dst) rooms[dst]
-                                best
-                    )
+                let perms = (permutations playerRooms.Length (remainingOpen |> Array.toList)) |> List.reduce List.append
+
+                let children = perms |> List.map (fun targets -> 
+                                                // move players
+                                                // TODO: OMG, it takes different amount of time for different players... This won't work
+                                                let movedState = targets |> List.indexed |> List.fold (fun st (i, target) -> goTo st playerRooms[i].Id target) newState
+                                                let result = loop movedState (targets |> List.map (fun t -> rooms[t]) |> List.toArray)
+                                                result
+                                                ) |> List.toArray
                 getBest children
         
-    // first we need to get to a room
     let state = { State.create (rooms |> Map.map (fun _ _ -> 0)) with TotalTime = 0; }
     let startAt = "AA"
 
-    let startRoutes = rooms |> Map.filter (fun k v -> v.Rate > 0) |> Map.map (fun k v -> (findShortestRoute rooms rooms[startAt] v).Value)
+    // before starting exploration, we need to players to get to a room with non-zero valves
+    let goodRooms = rooms |> Map.filter (fun k v -> v.Rate > 0)
+    let startRoutes = goodRooms |> Map.map (fun k v -> (findShortestRoute rooms rooms[startAt] v).Value)
+
+    let perms = permutations numPlayers (goodRooms.Keys |> Seq.toList) |> List.reduce List.append
+
+    //let ooo = perms |> List.map (fun targets -> 
+    //                    let zz = targets |> List.mapi (fun i target -> 
+    //                        let path = startRoutes[target]
+    //                        let newState = state.Update path.Length $"Start {target}"
+
+    //                        )
+    //                    )
+
     let best = startRoutes |> Map.toArray |> Array.map (fun (k, path) -> 
                             let newState = state.Update path.Length $"Start {k}"
-                            let finalState = loop newState rooms[k]
+                            let finalState = loop newState [|rooms[k]|]
                             finalState 
                             ) |> getBest
     best
@@ -118,13 +154,13 @@ let run (rooms: Map<string, Room>) maxTime =
 let part1 input =
     let rooms = Parsing.parseRows input parseRow |> Array.map (fun r -> (r.Id, r)) |> Map.ofArray
 
-    let best = run rooms 30
+    let best = run rooms 30 1
     let result = best.TotalSteam
     result
     
 let part2 input =
     let rooms = Parsing.parseRows input parseRow |> Array.map (fun r -> (r.Id, r)) |> Map.ofArray
 
-    let best = run rooms 26
+    let best = run rooms 26 2
     let result = best.TotalSteam
     result
